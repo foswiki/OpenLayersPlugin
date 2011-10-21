@@ -28,7 +28,7 @@ use Foswiki::Plugins ();    # For the API version
 # extension.
 our $VERSION = '$Rev$';
 
-our $RELEASE = '0.1.1';
+our $RELEASE = '1.1.1';
 
 # Short description of this plugin
 # One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
@@ -59,6 +59,7 @@ sub initPlugin {
           "ZonePlugin not installed/enabled...disabling OpenLayersPlugin");
       return 0;
   }
+    require Foswiki::Plugins::JQueryPlugin;
 
     $pubUrlPath = Foswiki::Func::getPubUrlPath();
 #     $hostUrL    = Foswiki::Func::getUrlHost();
@@ -110,25 +111,41 @@ sub _OPENLAYERSMAP {
     # $params->{_DEFAULT} will be 'hamburger'
     # $params->{sideorder} will be 'onions'
 
-    my $mapElement = $params->{mapelement} || 'openlayersmap';
+    my @mapMetadata;
 
-    my $mapHeight = $params->{mapheight} || '600';
-    my $mapWidth = $params->{mapwidth} || '800';
+    my $mapHeight = $params->{mapheight};
+    $mapHeight = '600' unless defined $mapHeight;
+    $mapHeight = $mapHeight.'px';
+    push @mapMetadata, "mapHeight:$mapHeight";
+
+    my $mapWidth = $params->{mapwidth};
+    $mapWidth = 'my800' unless defined $mapWidth;
+    $mapWidth = $mapWidth.'px';
+    push @mapMetadata, "mapHeight:$mapWidth";
+
+    my $mapViewPort = $params->{viewport};
+    $mapViewPort = '159,-32' unless defined $mapViewPort;
+    push @mapMetadata, "mapViewPort:$mapViewPort";
+
+    my $mapViewPortZoom = $params->{viewportzoom};
+    $mapViewPortZoom = '1' unless defined $mapViewPortZoom;
+    push @mapMetadata, "mapViewPortZoom:$mapViewPortZoom";
  
     my $mapControls = $params->{mapcontrols} || 'ArgParser,Attribution,Navigation,PanZoom';
     my $mapControlsArray = $params->{mapcontrolsarray} || 'navigation_control,new OpenLayers.Control.PanZoomBar({}),new OpenLayers.Control.LayerSwitcher({}),new OpenLayers.Control.Permalink(),new OpenLayers.Control.MousePosition({})' ;
     my $navigationOptions = $params->{navigation} || 'DragPan,ZoomBox,Handler.Click,Handler.Wheel';
     my $wheelNavigation = $params->{wheelnavigation} || 'disableWheelNavigation:false';
     my $mapcontrolGraticule = $params->{graticule} || 'off';
-    my $layerSwitcher = $params->{layerswitcher} || 'on';
+#    my $layerSwitcher = $params->{layerswitcher} || 'on';
 
-    my $mapMaxResolution = $params->{mapmaxresolution} || 'auto';    
-    my $mapMinResolution = $params->{mapminzoomlevel} || 'auto';
+    my $mapMaxResolution = $params->{mapmaxresolution} || '45/512';    
+    my $mapMinResolution = $params->{mapminresulution} || 'auto';
     my $mapNumZoomlLevels = $params->{mapnumzoomlevels} || '16';
     my $mapMaxScale = $params->{mapmaxscale} || '23';
     my $mapMinScale = $params->{mapminscale} || '23';
     my $mapProjection = $params->{mapprojection} || 'EPSG:4326';
-    my $mapUnits = $params->{mapUnits} || 'degrees';
+    my $mapUnits = $params->{mapunits} || 'degrees';
+#    my $mapFractionalZoom = $params->{fractionalzoom} || 'on';
 
     my $baseLayerName = $params->{name} || 'Base Layer';
     my $baseLayerMinZoomLevel = $params->{baselayerminzoomlevel} || '23';
@@ -156,200 +173,244 @@ sub _OPENLAYERSMAP {
     my $wmsLayerOpacity = $params->{wmslayeropacity} || 'opacity: .5';
 
 
-   # sanatize params
-
-    my @mapMetadata = (
-        "mapElement: $mapElement",
-        "mapHeight: $mapHeight",
-        "mapWidth: $mapWidth",
-        "mapMaxResolution: $mapMaxResolution",
-        "mapMinResolution: $mapMinResolution",
-        "mapNumZoomlLevels: $mapNumZoomlLevels",
-        "mapMaxScale: $mapMaxScale",
-        "mapMinScale: $mapMinScale",
-        "mapProjection: $mapProjection",
-        "mapUnits: $mapUnits",
-    );
+    my $mapFractionalZoom = $params->{fractionalzoom};
+    $mapFractionalZoom = 'on' unless defined $mapFractionalZoom;
+    $mapFractionalZoom = ($mapFractionalZoom eq 'on')?'true':'false';
+    push @mapMetadata, "mapFractionalZoom:$mapFractionalZoom";
 
 
     Foswiki::Func::addToZone(
         "script",
-        "OpenLayersPlugin", 
-       "<script src='$pubUrlPath/$Foswiki::cfg{SystemWebName}/OpenLayersPlugin/scripts/api/2/OpenLayers.js'></script>" 
+        "OPENLAYERSPLUGIN::OPENLAYERMAP::OPENLAYERS", 
+        "<script src='$pubUrlPath/$Foswiki::cfg{SystemWebName}/OpenLayersPlugin/scripts/api/2/OpenLayers.js'></script>",
+        "OPENLAYERSPLUGIN"
    );
 
-#     Foswiki::Func::addToZone(
-#         "script",
-#         "Googkle_API_3.2", 
-#        "<script src='http://maps.google.com/maps/api/js?sensor=false&v=3.2'></script>" 
-#    );
-
-    
+    Foswiki::Func::addToZone(
+        "script",
+        "OPENLAYERSPLUGIN",
+        "<script type='text/javascript'>jQuery(document).ready(function () { init(); });</script>"
+    );
+   
     my @layerList = ();
+    my @jsFragments;
+    my @layerScripts;
+    my @scriptVariable;
+    my @createMap;
+    my $isGoogleLayer;
+    my $mapLayerSwitcher;
     my $mapLayers = $params->{layers};
+
     if ($mapLayers) {
         foreach my $layerID (split(/\s*,\s*/, $mapLayers)) {
             push @layerList, $layerID; 
         }
-        my $mapLayerSwitcher = $params->{layerswitcher};
-        $mapLayerSwitcher = 'on' unless defined $mapLayerSwitcher;
-        $mapLayerSwitcher = ($mapLayerSwitcher eq 'on')?'true':'false';
-        push @jsFragment, "mapLayerSwitcher:$mapLayerSwitcher";
+    push @createMap, <<"HERE";
+    var mapOptions = { maxResolution: $mapMaxResolution, numZoomLevels: $mapNumZoomlLevels, fractionalZoom: $mapFractionalZoom}; 
+    var map = new OpenLayers.Map(mapOptions); 
+HERE
+
+    $mapLayerSwitcher = $params->{layerswitcher};
+    $mapLayerSwitcher = 'off' unless defined $mapLayerSwitcher;
+    $mapLayerSwitcher = ($mapLayerSwitcher eq 'on')?'true':'false';
+    push @mapMetadata, "mapLayerSwitcher:$mapLayerSwitcher";
+    if ($mapLayerSwitcher) {
+        push @createMap, 'map.addControl(new OpenLayers.Control.LayerSwitcher({}));';
     }
    
-    my @jsFragments;
     foreach my $layerID (@layerList) {
         my @jsFragment;
+        my @layerScript;
+        # layer ID
         push @jsFragment, "layerID:'$layerID'";
 
         # layer type
         my $layerType = $params->{$layerID.'_type'};
-        push @jsFragment, "layerType:$layerType" if defined $layerType;
 
         # layer server url
         my $layerURL = $params->{$layerID.'_url'};
-        push @jsFragment, "layerURL:$layerURL" if defined $layerURL;
 
         # layer name
         my $layerName = $params->{$layerID.'_name'};
-        push @jsFragment, "layerName:$layerName" if defined $layerName;
+        $layerName = $layerID unless defined $layerName;
 
         # server params
         my $serverParams = $params->{$layerID.'_serverparams'};
-        push @jsFragment, "serverParams:$serverParams" if defined $serverParams;
 
         # client options
         my $clientOptions = $params->{$layerID.'_clientoptions'};
-        push @jsFragment, "clientOptions:$clientOptions" if defined $clientOptions;
 
         # is base layer
         my $isBaseLayer = $params->{$layerID.'_isbaselayer'};
         $isBaseLayer = 'on' unless defined $isBaseLayer;
         $isBaseLayer = ($isBaseLayer eq 'on')?'true':'false';
-        push @jsFragment, "isbaselayer:$isBaseLayer";
+
+        # layer opacity
+        my $layerOpacity = $params->{$layerID.'_layeropacity'};
+        $layerOpacity = '0.5' unless defined $layerOpacity;
 
         # tile size
         my $tileSize = $params->{$layerID.'_tilesize'};
-        push @jsFragment, "tileSize:$tileSize" if defined $tileSize;
 
         # zoom levels
         my $zoomLevels = $params->{$layerID.'_zoomlevels'};
-        push @jsFragment, "zoomlevels:$zoomLevels" if defined $zoomLevels;
 
+        if ($layerType eq 'WMS') {
+            push @layerScript, <<"HERE";
+        var wmslayer$layerID = new OpenLayers.Layer.WMS( "$layerName",
+            "$layerURL",
+            {$serverParams}, {$clientOptions});
+        wmslayer$layerID.setIsBaseLayer($isBaseLayer);
+        map.addLayers([wmslayer$layerID]);
+HERE
+            if ($isBaseLayer eq 'false') {
+                push @layerScript, "\t\twmslayer$layerID.setOpacity($layerOpacity);\n";
+            }
+        } elsif ($layerType eq 'WW') {
+            push @layerScript, <<"HERE";
+var wwlayer$layerID = new OpenLayers.Layer.WorldWind( "$layerName",
+    "$layerURL", $tileSize, $zoomLevels,
+    {$serverParams}, {$clientOptions});
+map.addLayers([wwlayer$layerID]);
+HERE
+        } elsif ($layerType eq 'GOOGLE') {
+            $isGoogleLayer = 'true';
+            push @layerScript, <<"HERE";
+        var googlelayer$layerID = new OpenLayers.Layer.Google(
+            'Google Layer',
+            {}
+        );
+        map.addLayers([googlelayer$layerID]);
+HERE
+        } elsif ($layerType eq 'KML') {
+            push @layerScript, '/* KML Layer */';
+        } elsif ($layerType eq 'VECTOR') {
+            push @layerScript, <<"HERE";
+var vectorlayer$layerID = new OpenLayers.Layer.Vector("$layerName",
+    {$clientOptions});
+map.addControl(new OpenLayers.Control.EditingToolbar(vectorlayer$layerID));
+map.addLayers([vectorlayer$layerID]);
+HERE
+        }
 
-        # jsFragment
+        # javascript Fragments
         push @jsFragments, '{ '.join(', ', @jsFragment).'}';
+
+        # layer scripts
+        push @layerScripts, @layerScript;
 
     }
 
+    push @layerScripts, <<"HERE"
+    var viewportcorner = new OpenLayers.LonLat($mapViewPort);
+    if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
+        map.moveTo(viewportcorner,$mapViewPortZoom);
+    }
+HERE
+
+    } else { # No layers present use default DEMIS World map
+        push @layerScripts, <<"HERE";
+   var mapOptions = { maxResolution: 45/512, numZoomLevels: 11, fractionalZoom: true};
+   map = new OpenLayers.Map(mapOptions);
+
+    var wwlayerdemis = new OpenLayers.Layer.WorldWind( "World",
+        "http://www2.demis.nl/wms/ww.ashx?", 45, 11,
+        {T:'WorldMap'}, {tileSize: new OpenLayers.Size(512,512), wrapDateLine:true});
+    map.addLayers([wwlayerdemis]);
+
+    var viewportcorner = new OpenLayers.LonLat($mapViewPort);
+    if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
+        map.moveTo(viewportcorner,$mapViewPortZoom);
+    }
+
+HERE
+    }
 
     push @mapMetadata, 'jsFragments: ['.join(",\n", @jsFragments).']';
 
+    push @scriptVariable, @createMap;
 
+    push @scriptVariable, @layerScripts;
+    my $mapDiv='';
+    my $mapElement = $params->{mapelement};
+    if (!defined $mapElement) {
+        $mapElement = 'openlayersmap';
+        $mapDiv = "<div id='$mapElement' style='height:$mapHeight; width:$mapWidth; position:relative;'></div>";
+    }
+
+    push @scriptVariable, <<"HERE";
+    var style = new OpenLayers.Style({
+        pointRadius: "\${radius}",
+        fillColor: "#ffcc66",
+        fillOpacity: 0.8,
+        strokeColor: "#cc6633",
+        label: "\${pointLabel}",
+        strokeWidth: "\${width}",
+        strokeOpacity: 0.8
+    }, {
+        context: {
+            width: function(feature) {
+                return (feature.cluster) ? 2 : 1;
+            },
+            pointLabel: function(feature) {
+                return (feature.cluster) ? feature.attributes.count : feature.attributes.pointLabel ;
+            },
+            radius: function(feature) {
+                var pix = 3;
+                if(feature.cluster) {
+                    pix = Math.min(feature.attributes.count, 7) + 3;
+                }
+                return pix;
+            }
+        }
+    });
+HERE
+
+        push @scriptVariable, <<"HERE";
+    var strategy = new OpenLayers.Strategy.Cluster();
+    strategy.distance= 20;
+    strategy.threshold=2;
+    var styleselect = new OpenLayers.Style({fillColor: "#8aeeef",strokeColor: "#32a8a9"});
+
+    var styleMap= new OpenLayers.StyleMap({
+        "default": style,
+        "select": styleselect }); 
+HERE
+
+        push @scriptVariable, <<"HERE";
+    if(!map.getCenter()){
+        map.zoomToMaxExtent();
+    }
+    map.render('$mapElement');
+HERE
+
+    if ($isGoogleLayer eq 'true') {
+        Foswiki::Func::addToZone(
+            "script",
+            "OPENLAYERSPLUGIN", 
+            "<script src='http://maps.google.com/maps/api/js?sensor=false'></script>"
+        );
+    }
+
+
+    my $scriptVariable = "<script type='text/javascript'>function init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
     Foswiki::Func::addToZone(
         "script",
-        "OpenLayersPlugin/Javascript",
-        "<script type='text/javascript'>jQuery(document).ready(function () { init(); });</script>"
-
-  . <<"HERE"
-<script type='text/javascript'>
-
-    function init()  {   
-
-        var mapOptions = { maxResolution: 45/512, numZoomLevels: 11, fractionalZoom: true}; 
-
-        var map = new OpenLayers.Map(mapOptions); 
-
-        map.addControl(new OpenLayers.Control.LayerSwitcher({}));
-
-        var layerdemis = new OpenLayers.Layer.WorldWind( "Demis World Map",
-            "http://www2.demis.nl/wms/ww.ashx?", 45, 11,
-            {T:'WorldMap'}, {tileSize: new OpenLayers.Size(512,512), wrapDateLine:true});
-        map.addLayers([layerdemis]);
-
-        var wmslayercoraleco = new OpenLayers.Layer.WMS( "Australian Coral Ecoregions",
-            "http://spatial.ala.org.au/geoserver/ALA/wms",
-            {layers: "ALA:australian_coral_ecoregions",srs: "EPSG:4326",transparent: "true",format: "image/png"}, {visibility:false, wrapDateLine:true, opacity:0.8});
-        map.addLayers([wmslayercoraleco]);
-
-        var wmslayergreatbarrierreef = new OpenLayers.Layer.WMS( "Great Barrier Reef 100m DEM",
-            "http://spatial.ala.org.au/geoserver/ALA/wms",
-            {layers: "ALA:gbr_gbr100",srs: "EPSG:4326",transparent: "true",format: "image/png"}, {visibility:false, wrapDateLine:true, opacity:0.8});
-        map.addLayers([wmslayergreatbarrierreef]); 
-
-
-        // WW cached
-        layer = new OpenLayers.Layer.WorldWind( "World Map (tiles cached)",
-        "http://www2.demis.nl/wms/ww.ashx?", 45, 11,
-        {T:"WorldMap"}, {tileSize: new OpenLayers.Size(512,512), wrapDateLine:'true' }); 
-
-        var wms_layer_labels = new OpenLayers.Layer.WMS(
-            'Labels',
-            'http://vmap0.tiles.osgeo.org/wms/vmap0',
-            {layers: 'clabel,ctylabel,statelabel',
-            transparent:true},
-            {wrapDateLine:'true' }
-        );
-
-        var style = new OpenLayers.Style({
-            pointRadius: "${radius}",
-            fillColor: "#ffcc66",
-            fillOpacity: 0.8,
-            strokeColor: "#cc6633",
-            label: "${pointLabel}",
-            strokeWidth: "${width}",
-            strokeOpacity: 0.8
-        }, {
-            context: {
-                width: function(feature) {
-                    return (feature.cluster) ? 2 : 1;
-                },
-                pointLabel: function(feature) {
-                    return (feature.cluster) ? feature.attributes.count : feature.attributes.pointLabel ;
-                },
-                radius: function(feature) {
-                    var pix = 3;
-                    if(feature.cluster) {
-                        pix = Math.min(feature.attributes.count, 7) + 3;
-                    }
-                    return pix;
-                }
-            }
-        });
-
-        var strategy = new OpenLayers.Strategy.Cluster();
-        strategy.distance= 20;
-        strategy.threshold=2;
-        var styleselect = new OpenLayers.Style({fillColor: '#8aeeef',strokeColor: '#32a8a9'});
-
-        var styleMap= new OpenLayers.StyleMap({
-            "default": style,
-            "select": styleselect }); 
-
-        var vector_layer = new OpenLayers.Layer.Vector('Basic Vector Layer');
-
-        map.addLayers([layer,wms_layer_all,wms_layer_labels, vector_layer]);
-
-        map.addControl(new OpenLayers.Control.EditingToolbar(vector_layer));
-
-        map.render('$mapElement');
-
-        if(!map.getCenter()){
-            map.zoomToMaxExtent();
-        }
-
-
-    } 
-
-  </script>
-HERE
+        "OPENLAYERSPLUGIN::OPENLAYERSMAP::$mapElement",
+        "$scriptVariable",
+        "OPENLAYERSPLUGIN"
     );
 
-    my $mapMetadata = '{'.join(",\n", @mapMetadata)."}\n";
+#    my $mapMetadata = "<script type='text/javascript'>var metadata = {".join(",\n", @mapMetadata)."}</script>";
+#     Foswiki::Func::addToZone(
+#         "script",
+#         "OPENLAYERSPLUGIN::OPENLAYERSMAP::META$mapElement",
+#         "$mapMetadata",
+#         "OPENLAYERSPLUGIN"
+#     );
 
-    Foswiki::Func::addToZone('script', "OpenLayersPlugin/Javascript::$mapElement", $mapMetadata);
 
-    return "<div id='layerswitcher'></div><div id='$mapElement' style='height:$mapHeightpx; width:$mapWidthpx; position:relative;'></div>";
+    return "$mapDiv";
 }
 
 
@@ -365,7 +426,7 @@ NOTE: Please extend that file, not this notice.
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version. For
+of the License, or (at your option) any later version.e For
 more details read LICENSE in the root of this distribution.
 
 This program is distributed in the hope that it will be useful,

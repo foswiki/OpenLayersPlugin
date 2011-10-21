@@ -1831,5 +1831,5 @@ pub/System/OpenLayersPlugin/scripts/api/2/tools/release.sh 0775
 pub/System/OpenLayersPlugin/scripts/api/2/tools/shrinksafe.py 0775
 pub/System/OpenLayersPlugin/scripts/api/2/tools/toposort.py 0775
 pub/System/OpenLayersPlugin/scripts/api/2/tools/update_dev_dir.sh 0775
-test/unit/EmptyPlugin/EmptyPluginSuite.pm 0664
-test/unit/EmptyPlugin/EmptyPluginTests.pm 0664
+test/unit/OpenLayersPlugin/OpenLayersPluginSuite.pm 0664
+test/unit/OpenLayersPlugin/OpenLayersPluginTests.pm 0664

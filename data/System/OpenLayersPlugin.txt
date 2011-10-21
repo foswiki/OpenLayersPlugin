@@ -1,3 +1,4 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="" date="1319162198" format="1.1" version="2"}%
 %META:TOPICPARENT{name="Plugins"}%
 ---+ !OpenLayers Plugin
 
@@ -16,29 +17,107 @@ clashes with other extensions that may try to use the same name.
 
 *BAD*
    * Set EXAMPLE = Example setting
-   * Set FORMAT  = %d-%m-%y
+   * Set FORMAT = %d-%m-%y
 *Good*
    * Set EMPTYPLUGIN_EXAMPLE = Example setting
-   * Set EMPTYPLUGIN_FORMAT  = %d-%m-%y
-
+   * Set EMPTYPLUGIN_FORMAT = %d-%m-%y
 <!--
 One line description, required for extensions repository catalog.
    * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
 -->
 
+!OpenLayersMap renders a map using the !OpenLayer javascript library.
+---++ Syntax
+
+=%<nop>OPENLAYERSMAP{mapwidth="800" mapheight="600"}%=
+
+render a [[http://www.demis.nl][DEMIS]] world map
+
+| *Parameter* | *Description* | *Example* | *Default* |
+| =mapwidth= | the width of the map div | | full screen width |
+| =mapheight= |  the height of the map div | | =600= |
+| =viewport= | the longitude,latitude of the viewport | | =159,-38= |
+| =viewportzoom= | the default zoom level of viewport, -1 = no zoom. Values range from 1...n-1 (n = mapnumzoomlevels) | | =-1= |
+| =layers= | comma separated list of user assigned layerID's. (see below) e.g. ="BaseLayer,Overlay,Environmental"=  | | If no layers exist the default Demis map is rendered |
+| =layerid_type="WW"= <br /> =layerid_type="WMS"= <br /> =layerid_type="KML"= <br /> =layerid_type="GOOGLE"= | (per layer option)  the layer type.<ul><li>WW WorldWind</li><li>WMS Web Map Service</li><li>KML Google Earth data file</li></ul>,  e.g. Environmental_type="WMS" | | |
+| =layerid_url= | (per layer option) the url for the map server  | | |
+| =layerid_name= | (per layer option) the display name for the layer | Global Administrative Areas | layerid listed in =layers= |
+| =layerid_serverparams= | (per layer option) the parameters that are passed to the map server  |e.g. layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png' | |
+| =layerid_clientoptions= | (per layer option) the client options used by the OpenLayers javascript library when rendering the layer in the client's browser, these are not sent to the map server. | =visibility:false, wrapDateLine:true= | |
+| =layerid_isbaselayer= | (per layer option) is the layer a base layer on which  | | ="on"= |
+| =layerid_layeropacity= | (per layer option) the opacity of the layer if =isbaselayer="off"= . Base layers are not semi-transparent | | ="0.5"= |
+| =layerid_tilesize= | (per layer option) the tile size to request from the map server | | ="512"= |
+| =layerid_zoomlevels= | (per layer option) the width of the map div  | | ="11"= |
+
+
+Example
+
+<verbatim class="tml">
+%OPENLAYERSMAP{
+   mapwidth="600"
+   layers="myBase,myOverlay"
+   viewport="159,-32"
+   viewportzoom="-1"
+
+   myBase_type="WW"
+   myBase_url="http://www2.demis.nl/wms/ww.ashx?"
+   myBase_name="Demis World"
+   myBase_serverparams="T:'WorldMap'"
+   myBase_clientoptions="tileSize: new OpenLayers.Size(512,512), wrapDateLine:true"
+   myBase_tilesize="45"
+   myBase_zoomlevels="11"
+
+   myOverlay_type="WMS"
+   myOverlay_isbaselayer="off"
+   myOverlay_layeropacity="0.4"
+   myOverlay_url="http://spatial.ala.org.au/geoserver/ALA/wms"
+   myOverlay_name="Global Administrative Areas - World Boundary"
+   myOverlay_serverparams="layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png'"
+   myOverlay_clientoptions="visibility:false, wrapDateLine:true"
+}%
+</verbatim>
+
+Preview
+%OPENLAYERSMAP{
+   mapwidth="600"
+   layers="myBase,myOverlay"
+   viewport="159,-32"
+   viewportzoom="-1"
+
+   myBase_type="WW"
+   myBase_url="http://www2.demis.nl/wms/ww.ashx?"
+   myBase_name="Demis World"
+   myBase_serverparams="T:'WorldMap'"
+   myBase_clientoptions="tileSize: new OpenLayers.Size(512,512), wrapDateLine:true"
+   myBase_tilesize="45"
+   myBase_zoomlevels="11"
+
+   myOverlay_type="WMS"
+   myOverlay_isbaselayer="off"
+   myOverlay_layeropacity="0.4"
+   myOverlay_url="http://spatial.ala.org.au/geoserver/ALA/wms"
+   myOverlay_name="Global Administrative Areas - World Boundary"
+   myOverlay_serverparams="layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png'"
+   myOverlay_clientoptions="visibility:false, wrapDateLine:true"
+}%
+
+
+<div id="myMap" style="position:relative;"></div>
+
+
 ---++ Installation
+
 %$INSTALL_INSTRUCTIONS%
 
 ---++ Plugin Info
 
 |  Author: | Foswiki:Main.PaulAlexander |
-|  Copyright: | &copy; 2011, [[http://taxonomy.org.au][Taxonomy Research & Information Network]], Foswiki Contributors %BR%\
-                This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is Copyright (c) !OpenLayers Contributors, see [[%ATTACHURLPATH%/scripts/api/2/doc/authors.txt][authors.txt]] |
+|  Copyright: | © 2011, [[http://taxonomy.org.au][Taxonomy Research & Information Network]], Foswiki Contributors %BR%\ This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is Copyright (c) !OpenLayers Contributors, see [[%ATTACHURLPATH%/scripts/api/2/doc/authors.txt][authors.txt]] |
 |  License: | This Foswiki plugin is licensed under the GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License Version 3]])%BR% \
-              This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is licensed under the [[%ATTACHURLPATH%/scripts/api/2/license.txt][2-clause BSD License]], which in turn includes code licensed under the [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/APACHE-2.0.txt][Apache 2.0]] and [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/MIT-LICENSE.txt][MIT]] licenses. See [[%ATTACHURLPATH%/scripts/api/2/OpenLayers.js][OpenLayers.js]] for full copyright headers and notices. |
+This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is licensed under the [[%ATTACHURLPATH%/scripts/api/2/license.txt][2-clause BSD License]], which in turn includes code licensed under the [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/APACHE-2.0.txt][Apache 2.0]] and [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/MIT-LICENSE.txt][MIT]] licenses. See [[%ATTACHURLPATH%/scripts/api/2/OpenLayers.js][OpenLayers.js]] for full copyright headers and notices. |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
-|  Change&nbsp;History: | <!-- versions below in reverse order -->&nbsp; |
+|  Change History: | <!-- versions below in reverse order --> |
 |  XX Mmm 20XX (1.0) | Description of change |
 |  Home: | http://foswiki.org/Extensions/%TOPIC% |
 |  Support: | http://foswiki.org/Support/%TOPIC% |
