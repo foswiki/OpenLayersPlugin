@@ -1,0 +1,4 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319438109" format="1.1" reprev="1" version="1"}%
+%META:TOPICPARENT{name="WebPreferences"}%
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| LayerType | select | | vector,wms,worldwind  | | |

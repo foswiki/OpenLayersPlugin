@@ -1,0 +1,9 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319438062" format="1.1" reprev="1" version="1"}%
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| Name | text | | | | |
+| URL | text | | | | |
+| Clustering | text | | | | |
+| Style | text | | | | |
+
+%META:FORM{name="LayerTypeForm"}%
+%META:FIELD{name="LayerType" attributes="" title="LayerType" value="vector"}%

@@ -1,0 +1,10 @@
+%META:TOPICINFO{author="BaseUserMapping_333" date="1319438274" format="1.1" version="1"}%
+-- Main.AdminUser - 24 Oct 2011
+
+%META:FORM{name="Applications/OpenLayers.WMSLayerForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="Default Map"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="http://labs.metacarta.com/wms/vmap0"}%
+%META:FIELD{name="ServerParams" attributes="" title="ServerParams" value="layers: 'basic'"}%
+%META:FIELD{name="ClientOptions" attributes="" title="ClientOptions" value="wrapDateLine:'true'"}%
+%META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value=""}%
+%META:FIELD{name="IsVisible" attributes="" title="IsVisible" value=""}%
