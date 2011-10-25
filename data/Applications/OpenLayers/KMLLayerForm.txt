@@ -1,0 +1,9 @@
+%META:TOPICINFO{author="BaseUserMapping_333" date="1319517998" format="1.1" version="1"}%
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| Name | text | | | {String} | |
+| URL | text | | | {String} Base URL | |
+| ExtractAttributes | text | | | {Boolean} Extract attributes from KML. | |
+| IsVisible | text | | | | |
+
+%META:FORM{name="LayerTypeForm"}%
+%META:FIELD{name="LayerType" attributes="" title="LayerType" value="kml"}%

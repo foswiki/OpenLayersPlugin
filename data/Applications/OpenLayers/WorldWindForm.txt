@@ -1,0 +1,14 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319503546" format="1.1" reprev="1" version="1"}%
+%META:TOPICPARENT{name="WebTopicList"}%
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| Name | text | | | {String} | |
+| URL | text | | | {String} Base URL | |
+| TileSize | text | | | {Float} Level zero tile size degrees | |
+| ZoomLevels | text | | | {Integer} number of zoom levels | |
+| ServerParams | text | | | {Object} additional parameters | |
+| ClientOptions | text | | | {Object} additional options | |
+| IsBaseLayer | text | | | | |
+| IsVisible | text | | | | |
+
+%META:FORM{name="LayerTypeForm"}%
+%META:FIELD{name="LayerType" attributes="" title="LayerType" value="worldwind"}%
