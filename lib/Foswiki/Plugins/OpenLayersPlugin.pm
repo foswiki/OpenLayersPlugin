@@ -215,15 +215,7 @@ sub typehandler_kml {
                         extractStyles: true,
                         extractAttributes: false
                     })
-                }),
-                styleMap: new OpenLayers.StyleMap({
-                    "default": style,
-                    "select": {
-                        fillColor: "#8aeeef",
-                        strokeColor: "#32a8a9"
-                    }
                 })
-                isBaseLayer:$isBaseLayer
             }); 
   
     map.addLayers([kmllayer$layerweb$layertopic]);
@@ -240,7 +232,8 @@ sub typehandler_vector {
     my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
     my @fields = $layerObject->find('FIELD');
     my %data;
-    my @returnString;   
+    my @returnString;  
+    my $proxy = '../Applications/OpenLayers'.'.Proxy?skin=text;'.'url=';
     
     my $isBaseLayer = $data{IsBaseLayer};
     $isBaseLayer = 'false' unless defined $isBaseLayer;
@@ -257,18 +250,22 @@ sub typehandler_vector {
     } else {
         return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
+    
         
     push @returnString, <<"HERE";
+    OpenLayers.ProxyHost = '$proxy';
         var wikilayer$layerweb$layertopic = new OpenLayers.Layer.Vector('$data{Name}',{
             protocol: new OpenLayers.Protocol.HTTP({
                 url: '$data{URL}',
                 format: new OpenLayers.Format.GeoJSON({})                    
             }),
             isBaseLayer:$isBaseLayer,
+            style: style,
             strategies: [new OpenLayers.Strategy.Fixed()]
-        });
+        },{isBaseLayer:$isBaseLayer});
 
         map.addLayers([wikilayer$layerweb$layertopic]);
+
 HERE
 
     my $returnString = "\n".join("\n", @returnString)."\n";
@@ -497,45 +494,73 @@ HERE
         $mapElement = 'openlayersmap';
         $mapDiv = "<div id='$mapElement' style='height:$mapHeight; width:$mapWidth; position:relative;'></div>";
     }
-
-    push @scriptVariable, <<"HERE";
-    var style = new OpenLayers.Style({
-        pointRadius: "\${radius}",
-        fillColor: "#ffcc66",
-        fillOpacity: 0.8,
-        strokeColor: "#cc6633",
-        label: "\${pointLabel}",
-        strokeWidth: "\${width}",
-        strokeOpacity: 0.8
-    }, {
-        context: {
-            width: function(feature) {
-                return (feature.cluster) ? 2 : 1;
-            },
-            pointLabel: function(feature) {
-                return (feature.cluster) ? feature.attributes.count : feature.attributes.pointLabel ;
-            },
-            radius: function(feature) {
-                var pix = 3;
-                if(feature.cluster) {
-                    pix = Math.min(feature.attributes.count, 7) + 3;
-                }
-                return pix;
+    
+     push @scriptVariable, <<"HERE";
+       var style = new OpenLayers.Style({
+      pointRadius: "\${radius}",
+      fillColor: "#ffcc66",
+      fillOpacity: 0.8,
+      strokeColor: "#cc6633",
+      label: "\${pointLabel}",
+      strokeWidth: "\${width}",
+      strokeOpacity: 0.8
+   }, {
+      context: {
+         width: function(feature) {
+            return (feature.cluster) ? 2 : 1;
+         },
+         pointLabel: function(feature) {
+            return (feature.cluster) ? feature.attributes.count : "" ;
+         },
+         radius: function(feature) {
+            var pix = 3;
+            if(feature.cluster) {
+               pix = Math.min(feature.attributes.count, 7) + 3;
             }
-        }
-    });
+            return pix;
+         }
+      }
+   });
 HERE
-# 
-#         push @scriptVariable, <<"HERE";
-#     var strategy = new OpenLayers.Strategy.Cluster();
-#     strategy.distance= 20;
-#     strategy.threshold=2;
-#     var styleselect = new OpenLayers.Style({fillColor: "#8aeeef",strokeColor: "#32a8a9"});
-# 
-#     var styleMap= new OpenLayers.StyleMap({
-#         "default": style,
-#         "select": styleselect }); 
+
+#     push @scriptVariable, <<"HERE";
+#     var style = new OpenLayers.Style({
+#         pointRadius: "\${radius}",
+#         fillColor: "#ffcc66",
+#         fillOpacity: 0.8,
+#         strokeColor: "#cc6633",
+#         label: "\${pointLabel}",
+#         strokeWidth: "\${width}",
+#         strokeOpacity: 0.8
+#     }, {
+#         context: {
+#             width: function(feature) {
+#                 return (feature.cluster) ? 2 : 1;
+#             },
+#             pointLabel: function(feature) {
+#                 return (feature.cluster) ? feature.attributes.count : feature.attributes.pointLabel ;
+#             },
+#             radius: function(feature) {
+#                 var pix = 3;
+#                 if(feature.cluster) {
+#                     pix = Math.min(feature.attributes.count, 7) + 3;
+#                 }
+#                 return pix;
+#             }
+#         }
+#     });
 # HERE
+# 
+        push @scriptVariable, <<"HERE";
+    var strategy = new OpenLayers.Strategy.Cluster();
+    strategy.distance= 20;
+    strategy.threshold=2;
+    var styleselect = new OpenLayers.Style({fillColor: "#8aeeef",strokeColor: "#32a8a9"});
+
+    var styleMap= new OpenLayers.StyleMap({
+        "default": style,
+        "select": styleselect }); 
+HERE
 
 #         push @scriptVariable, <<"HERE";
 #     if(!map.getCenter()){

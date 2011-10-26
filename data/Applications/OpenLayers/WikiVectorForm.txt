@@ -1,9 +1,11 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319520384" format="1.1" reprev="1" version="2"}%
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319582611" format="1.1" reprev="1" version="3"}%
 | *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
 | Name | text | | | | |
 | URL | text | | | | |
-| Clustering | text | | | | |
-| Style | text | | | | |
+| Clustering | text | | | Clustering not implemented | |
+| Format | text | | | Format not implemented | |
+| Protocol | text | | | Protocol not implemented | |
+| Style | text | | | Style not implemented | |
 | IsBaseLayer | select | | false,true | | |
 
 %META:FORM{name="LayerTypeForm"}%
