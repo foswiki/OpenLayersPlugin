@@ -1,8 +1,10 @@
-%META:TOPICINFO{author="BaseUserMapping_333" date="1319517998" format="1.1" version="1"}%
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319673534" format="1.1" reprev="3" version="3"}%
 | *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
 | Name | text | | | {String} | |
 | URL | text | | | {String} Base URL | |
 | ExtractAttributes | text | | | {Boolean} Extract attributes from KML. | |
+| ExtractStyles | text | | | {Boolean} Extract point styles and load external graphics (is any) from KML. Set to =on= if graphics exist locally. | |
+| Clustering | text | | | {Boolean} Cluster 1 or more points within a 20 pixel circumference. | |
 | IsVisible | text | | | | |
 
 %META:FORM{name="LayerTypeForm"}%

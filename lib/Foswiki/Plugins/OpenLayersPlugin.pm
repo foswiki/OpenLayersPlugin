@@ -187,15 +187,58 @@ sub typehandler_kml {
     my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
     my @fields = $layerObject->find('FIELD');
     my %data;
-    my @returnString;    
-    
-    my $isBaseLayer = $data{IsBaseLayer};
-    $isBaseLayer = 'false' unless defined $isBaseLayer;
-    $isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
+    my @returnString;
+    my $strategy;
+    my $style;
     
     foreach my $field (@fields) {
         $data{$field->{name}} = $field->{value};
     }
+    
+    #my $extractStyles = $data{ExtractStyles};
+    my $extractStyles = Foswiki::Func::isTrue($data{ExtractStyles}, 0) ? 'true' : 'false';
+    #'off' unless defined $extractStyles;
+    #$extractStyles = ($extractStyles eq 'on')?'true':'false';
+    
+    #my $extractAttributes = $data{ExtractAttributes};
+    #$extractAttributes = 'on' unless defined $extractAttributes;
+    #$extractAttributes = ($extractAttributes eq 'on')?'true':'false';
+    my $extractAttributes = Foswiki::Func::isTrue($data{ExtractAttributes}, 0) ? 'true' : 'false';
+    
+    #my $isBaseLayer = $data{IsBaseLayer};
+    #$isBaseLayer = 'false' unless defined $isBaseLayer;
+    #$isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
+    my $isBaseLayer = Foswiki::Func::isTrue($data{IsBaseLayer}, 0) ? 'true' : 'false';
+    
+    my $clustering = $data{Clustering};
+#     my $distance;
+#     my $threshold;
+    $clustering = 'on' unless defined $clustering;
+#     $clustering = ($clustering eq 'on')?'true':'false';
+    
+    if ($clustering && $clustering =~ /^(\d+),\s*(\d+)$/) {
+        my $distance = $1;
+        my $threshold = $2;
+        $strategy = ", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
+        $clustering = 'true';
+    } elsif (Foswiki::Func::isTrue($clustering, 1)) {
+        $clustering = 'true';
+        $strategy = ", new OpenLayers.Strategy.Cluster()";
+    } else {
+        $clustering = 'false';
+    }
+    
+    if ($clustering eq 'true') {
+         $style=<<"HERE";
+        //Create a style map object and set the 'default' intent to the
+var vector_style_map$layerweb$layertopic = new OpenLayers.StyleMap({
+'default': style
+});
+//Add the style map to the vector layer threshold, distance
+kmllayer$layerweb$layertopic.styleMap = vector_style_map$layerweb$layertopic;
+HERE
+    }
+    
     if ($data{URL} and $data{URL} =~ /\w/) {
         if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
             my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
@@ -208,17 +251,18 @@ sub typehandler_kml {
     push @returnString, <<"HERE";
         var kmllayer$layerweb$layertopic = new OpenLayers.Layer.Vector(
             "$data{Name}",
-            {  strategies: [new OpenLayers.Strategy.Fixed(), new OpenLayers.Strategy.Cluster()],
+            { strategies: [new OpenLayers.Strategy.Fixed() $strategy],
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: "$data{URL}",
                     format: new OpenLayers.Format.KML({
-                        extractStyles: true,
-                        extractAttributes: false
+                        extractStyles: $extractStyles,
+                        extractAttributes: $extractAttributes
                     })
                 })
             }); 
   
     map.addLayers([kmllayer$layerweb$layertopic]);
+    $style
 HERE
 
     my $returnString = "\n".join("\n", @returnString)."\n";
@@ -232,6 +276,8 @@ sub typehandler_vector {
     my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
     my @fields = $layerObject->find('FIELD');
     my %data;
+    my $strategy;
+    my $style;
     my @returnString;  
     my $proxy = '../Applications/OpenLayers'.'.Proxy?skin=text;'.'url=';
     
@@ -242,6 +288,23 @@ sub typehandler_vector {
     foreach my $field (@fields) {
         $data{$field->{name}} = $field->{value};
     }
+    
+    my $clustering = $data{Clustering};
+    $clustering = 'on' unless defined $clustering;
+    $clustering = ($clustering eq 'on')?'true':'false';
+
+    if ($clustering eq 'true') {
+        $strategy = ", new OpenLayers.Strategy.Cluster()";
+        $style=<<"HERE";
+        //Clustering = $clustering Create a style map object and set the 'default' intent to the
+var wikilayer_style_map$layerweb$layertopic = new OpenLayers.StyleMap({
+'default': style
+});
+//Add the style map to the vector layer
+wikilayer$layerweb$layertopic.styleMap = wikilayer_style_map$layerweb$layertopic;
+HERE
+    }
+    
     if ($data{URL} and $data{URL} =~ /\w/) {
         if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
             my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
@@ -250,22 +313,19 @@ sub typehandler_vector {
     } else {
         return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-    
         
     push @returnString, <<"HERE";
-    OpenLayers.ProxyHost = '$proxy';
+    //OpenLayers.ProxyHost = '$proxy';
         var wikilayer$layerweb$layertopic = new OpenLayers.Layer.Vector('$data{Name}',{
             protocol: new OpenLayers.Protocol.HTTP({
                 url: '$data{URL}',
                 format: new OpenLayers.Format.GeoJSON({})                    
             }),
-            isBaseLayer:$isBaseLayer,
-            style: style,
-            strategies: [new OpenLayers.Strategy.Fixed()]
-        },{isBaseLayer:$isBaseLayer});
+            strategies: [new OpenLayers.Strategy.Fixed()$strategy]
+        });
 
         map.addLayers([wikilayer$layerweb$layertopic]);
-
+        $style
 HERE
 
     my $returnString = "\n".join("\n", @returnString)."\n";
@@ -429,7 +489,7 @@ sub _OPENLAYERSMAP {
 
     push @scriptVariable, <<"HERE";
         var mapOptions = { maxResolution: 45/512, numZoomLevels: 11, fractionalZoom: true};
-        var map = new OpenLayers.Map(mapOptions);
+        map = new OpenLayers.Map(mapOptions);
 HERE
 
     my $mapLayerSwitcher = $params->{layerswitcher};
@@ -486,8 +546,6 @@ HERE
 #     my $isGoogleLayer;
     my $mapLayers = $params->{layers};
 
-
-    push @scriptVariable, @layerScripts;
     my $mapDiv='';
     my $mapElement = $params->{mapelement};
     if (!defined $mapElement) {
@@ -496,7 +554,7 @@ HERE
     }
     
      push @scriptVariable, <<"HERE";
-       var style = new OpenLayers.Style({
+      var style = new OpenLayers.Style({
       pointRadius: "\${radius}",
       fillColor: "#ffcc66",
       fillOpacity: 0.8,
@@ -522,6 +580,8 @@ HERE
       }
    });
 HERE
+
+    push @scriptVariable, @layerScripts;
 
 #     push @scriptVariable, <<"HERE";
 #     var style = new OpenLayers.Style({
@@ -596,7 +656,7 @@ HERE
     }
 
 
-    my $scriptVariable = "<script type='text/javascript'>function init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
+    my $scriptVariable = "<script type='text/javascript'>var map;\nfunction init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
     Foswiki::Func::addToZone(
         "script",
         "OPENLAYERSPLUGIN::OPENLAYERSMAP::$mapElement",
