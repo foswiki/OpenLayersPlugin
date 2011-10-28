@@ -231,11 +231,11 @@ sub typehandler_kml {
     if ($clustering eq 'true') {
          $style=<<"HERE";
         //Create a style map object and set the 'default' intent to the
-var vector_style_map$layertopic = new OpenLayers.StyleMap({
-'default': style
-});
+    var vector_style_map$layertopic = new OpenLayers.StyleMap({
+        'default': style
+    });
 //Add the style map to the vector layer threshold, distance
-kmllayer$layertopic.styleMap = vector_style_map$layertopic;
+    kmllayer$layertopic.styleMap = vector_style_map$layertopic;
 HERE
     }
     
@@ -256,13 +256,22 @@ HERE
                     url: "$data{URL}",
                     format: new OpenLayers.Format.KML({
                         extractStyles: $extractStyles,
-                        placemarksDesc: 'flee',
                         extractAttributes: $extractAttributes
                     })
                 })
             }); 
   
     map.addLayers([kmllayer$layertopic]);
+    
+        select = new OpenLayers.Control.SelectFeature(kmllayer$layertopic);
+    kmllayer$layertopic.events.on({
+        "featureselected": onFeatureSelect,
+        "featureunselected": onFeatureUnselect
+    });
+
+map.addControl(select);
+select.activate();
+
     $style
 HERE
 
@@ -573,7 +582,7 @@ HERE
             return (feature.cluster) ? 2 : 1;
          },
          pointLabel: function(feature) {
-            return (feature.cluster) ? feature.attributes.count : "" ;
+            return (feature.cluster) ? feature.attributes.count : "feature.attributes.name" ;
          },
          radius: function(feature) {
             var pix = 3;
@@ -664,9 +673,52 @@ HERE
             "<script src='http://maps.google.com/maps/api/js?v=3.2&sensor=false'></script>"
         );
     }
+    
+    my $mapFunctions = <<"HERE";
+    <script type="text/javascript">
+    
+            function onPopupClose(evt) {
+            select.unselectAll();
+        }
+
+        function onFeatureSelect(event) {
+            var feature = event.feature;
+            // Since KML is user-generated, do naive protection against
+            // Javascript.
+            var content = "<h2>"+feature.attributes.name + "</h2>" + feature.attributes.description;
+            if (content.search("<script") != -1) {
+                content = "Content contained Javascript! Escaped content below.<br>" + content.replace(/</g, "&lt;");
+            }
+            popup = new OpenLayers.Popup.FramedCloud("chicken",
+                feature.geometry.getBounds().getCenterLonLat(),
+                new OpenLayers.Size(100,100),
+                content,
+                null, true, onPopupClose);
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+    function onFeatureUnselect(event) {
+        var feature = event.feature;
+            if(feature.popup) {
+                map.removePopup(feature.popup);
+                feature.popup.destroy();
+                delete feature.popup;
+            }
+        }
+    </script>
+        
+HERE
+
+        Foswiki::Func::addToZone(
+        "script",
+        "OPENLAYERSPLUGIN::OPENLAYERSMAP",
+        "$mapFunctions",
+        "OPENLAYERSPLUGIN"
+    );
 
 
-    my $scriptVariable = "<script type='text/javascript'>var map;\nfunction init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
+    my $scriptVariable = "<script type='text/javascript'> var map, select; function init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
+
     Foswiki::Func::addToZone(
         "script",
         "OPENLAYERSPLUGIN::OPENLAYERSMAP::$mapElement",
