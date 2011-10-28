@@ -36,74 +36,58 @@ render a [[http://www.demis.nl][DEMIS]] world map
 | *Parameter* | *Description* | *Example* | *Default* |
 | =mapwidth= | the width of the map div | | full screen width |
 | =mapheight= |  the height of the map div | | =600= |
-| =viewport= | the longitude,latitude of the viewport | | =159,-38= |
+| =mapelement= |  the html div element in which the map will be rendered  | | =openlayersmap= |
+| =viewport= | the longitude,latitude or the web.topic name of the layer (listed in =layers=) which will be used to set the bounds of the viewport | | =159,-38= |
 | =viewportzoom= | the default zoom level of viewport, -1 = no zoom. Values range from 1...n-1 (n = mapnumzoomlevels) | | =-1= |
-| =layers= | comma separated list of user assigned layerID's. (see below) e.g. ="BaseLayer,Overlay,Environmental"=  | | If no layers exist the default Demis map is rendered |
-| =layerid_type="WW"= <br /> =layerid_type="WMS"= <br /> =layerid_type="KML"= <br /> =layerid_type="GOOGLE"= | (per layer option)  the layer type.<ul><li>WW WorldWind</li><li>WMS Web Map Service</li><li>KML Google Earth data file</li></ul>,  e.g. Environmental_type="WMS" | | |
-| =layerid_url= | (per layer option) the url for the map server  | | |
-| =layerid_name= | (per layer option) the display name for the layer | Global Administrative Areas | layerid listed in =layers= |
-| =layerid_serverparams= | (per layer option) the parameters that are passed to the map server  |e.g. layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png' | |
-| =layerid_clientoptions= | (per layer option) the client options used by the OpenLayers javascript library when rendering the layer in the client's browser, these are not sent to the map server. | =visibility:false, wrapDateLine:true= | |
-| =layerid_isbaselayer= | (per layer option) is the layer a base layer on which  | | ="on"= |
-| =layerid_layeropacity= | (per layer option) the opacity of the layer if =isbaselayer="off"= . Base layers are not semi-transparent | | ="0.5"= |
-| =layerid_tilesize= | (per layer option) the tile size to request from the map server | | ="512"= |
-| =layerid_zoomlevels= | (per layer option) the width of the map div  | | ="11"= |
+| =layers= | comma separated list of topics, each with an defined [[%SCRIPTURL{view}%/%WEB%.%TOPIC%#Defined_Forms][OpenLayers form attached]]  | | If no layers exist the default Demis map is rendered |
 
 
 Example
 
 <verbatim class="tml">
 %OPENLAYERSMAP{
-   mapwidth="600"
-   layers="myBase,myOverlay"
+   mapwidth="n600"
    viewport="159,-32"
+   viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
-
-   myBase_type="WW"
-   myBase_url="http://www2.demis.nl/wms/ww.ashx?"
-   myBase_name="Demis World"
-   myBase_serverparams="T:'WorldMap'"
-   myBase_clientoptions="tileSize: new OpenLayers.Size(512,512), wrapDateLine:true"
-   myBase_tilesize="45"
-   myBase_zoomlevels="11"
-
-   myOverlay_type="WMS"
-   myOverlay_isbaselayer="off"
-   myOverlay_layeropacity="0.4"
-   myOverlay_url="http://spatial.ala.org.au/geoserver/ALA/wms"
-   myOverlay_name="Global Administrative Areas - World Boundary"
-   myOverlay_serverparams="layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png'"
-   myOverlay_clientoptions="visibility:false, wrapDateLine:true"
-}%
+   mapprojection="EPSG:4326"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures"
+   mapelement="myMap"
+   styleobject=""
+   basetopics=""
+   }%   
 </verbatim>
+
 
 Preview
 %OPENLAYERSMAP{
-   mapwidth="600"
-   layers="myBase,myOverlay"
+   mapwidth="n600"
    viewport="159,-32"
+   viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
-
-   myBase_type="WW"
-   myBase_url="http://www2.demis.nl/wms/ww.ashx?"
-   myBase_name="Demis World"
-   myBase_serverparams="T:'WorldMap'"
-   myBase_clientoptions="tileSize: new OpenLayers.Size(512,512), wrapDateLine:true"
-   myBase_tilesize="45"
-   myBase_zoomlevels="11"
-
-   myOverlay_type="WMS"
-   myOverlay_isbaselayer="off"
-   myOverlay_layeropacity="0.4"
-   myOverlay_url="http://spatial.ala.org.au/geoserver/ALA/wms"
-   myOverlay_name="Global Administrative Areas - World Boundary"
-   myOverlay_serverparams="layers: 'ALA:world',srs: 'EPSG:4326',format: 'image/png'"
-   myOverlay_clientoptions="visibility:false, wrapDateLine:true"
-}%
-
-
+   mapprojection="EPSG:4326"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures"
+   mapelement1="myMap"
+   styleobject=""
+   basetopics=""
+   }%
 <div id="myMap" style="position:relative;"></div>
 
+
+
+---++ Defined Forms
+OpenLayers comes installed with dataforms defining various layers that can be rendered.
+Set the Web Preferences to point the variable OPENLAYERSPLUGIN_MAPSWEB to the location of these forms and add links for these forms the WEBFORMS varaible in your [[WebPreferences]] that are used
+
+---+++ Defining your own forms
+Below is a table of the various Layer types and variables which can be set from a layer form. Ensure you attach the [[Applications/OpenLayers/LayerTypeForm][LayerTypeForm]] and set the value of LayerType to the one of (google, kml, vector, wfs, wms, or worldwind).
+|*LayerType*|*Fields*|*sample*|
+|google| | |
+|kml|Name,URL,Clustering|MyKMLFeatures|
+|vector|Name,URL,Clustering|Wiki|
+|wfs| | |
+|wms|Name,URL, ServerParams{Object}, ClientOptions{Object}|[[%OPENLAYERSPLUGIN_MAPSWEB%.WMSLayerForm][ALA_GreatBarrierReef]]|
+|worldwind|Name,URL,TileSize,ZoomLevels,ServerParams,ClientOptions,IsBaseLayer,IsVisible|[[%OPENLAYERSPLUGIN_MAPSWEB%.WorldWindForm][Demis]]|
 
 ---++ Installation
 

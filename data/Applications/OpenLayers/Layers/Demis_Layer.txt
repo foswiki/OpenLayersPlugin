@@ -1,0 +1,13 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319759946" format="1.1" reprev="2" version="2"}%
+-- Main.AdminUser - 25 Oct 2011
+
+%META:FORM{name="Applications/OpenLayers/WorldWindForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="Demis World"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="http://www2.demis.nl/wms/ww.ashx?"}%
+%META:FIELD{name="TileSize" attributes="" title="TileSize" value="45"}%
+%META:FIELD{name="ZoomLevels" attributes="" title="ZoomLevels" value="11"}%
+%META:FIELD{name="ServerParams" attributes="" title="ServerParams" value="T:'WorldMap'"}%
+%META:FIELD{name="ClientOptions" attributes="" title="ClientOptions" value="tileSize: new OpenLayers.Size(512,512), wrapDateLine:true"}%
+%META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value=""}%
+%META:FIELD{name="IsVisible" attributes="" title="IsVisible" value=""}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1319759946" from="Sandbox.Demis_Layer" to="Applications/OpenLayers/Layers.Demis_Layer"}%

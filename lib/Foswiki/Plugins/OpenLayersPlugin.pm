@@ -231,11 +231,11 @@ sub typehandler_kml {
     if ($clustering eq 'true') {
          $style=<<"HERE";
         //Create a style map object and set the 'default' intent to the
-var vector_style_map$layerweb$layertopic = new OpenLayers.StyleMap({
+var vector_style_map$layertopic = new OpenLayers.StyleMap({
 'default': style
 });
 //Add the style map to the vector layer threshold, distance
-kmllayer$layerweb$layertopic.styleMap = vector_style_map$layerweb$layertopic;
+kmllayer$layertopic.styleMap = vector_style_map$layertopic;
 HERE
     }
     
@@ -249,19 +249,20 @@ HERE
     }
         
     push @returnString, <<"HERE";
-        var kmllayer$layerweb$layertopic = new OpenLayers.Layer.Vector(
+        var kmllayer$layertopic = new OpenLayers.Layer.Vector(
             "$data{Name}",
             { strategies: [new OpenLayers.Strategy.Fixed() $strategy],
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: "$data{URL}",
                     format: new OpenLayers.Format.KML({
                         extractStyles: $extractStyles,
+                        placemarksDesc: 'flee',
                         extractAttributes: $extractAttributes
                     })
                 })
             }); 
   
-    map.addLayers([kmllayer$layerweb$layertopic]);
+    map.addLayers([kmllayer$layertopic]);
     $style
 HERE
 
@@ -297,11 +298,11 @@ sub typehandler_vector {
         $strategy = ", new OpenLayers.Strategy.Cluster()";
         $style=<<"HERE";
         //Clustering = $clustering Create a style map object and set the 'default' intent to the
-var wikilayer_style_map$layerweb$layertopic = new OpenLayers.StyleMap({
+var wikilayer_style_map$layertopic = new OpenLayers.StyleMap({
 'default': style
 });
 //Add the style map to the vector layer
-wikilayer$layerweb$layertopic.styleMap = wikilayer_style_map$layerweb$layertopic;
+wikilayer$layertopic.styleMap = wikilayer_style_map$layertopic;
 HERE
     }
     
@@ -316,7 +317,7 @@ HERE
         
     push @returnString, <<"HERE";
     //OpenLayers.ProxyHost = '$proxy';
-        var wikilayer$layerweb$layertopic = new OpenLayers.Layer.Vector('$data{Name}',{
+        var wikilayer$layertopic = new OpenLayers.Layer.Vector('$data{Name}',{
             protocol: new OpenLayers.Protocol.HTTP({
                 url: '$data{URL}',
                 format: new OpenLayers.Format.GeoJSON({})                    
@@ -324,7 +325,7 @@ HERE
             strategies: [new OpenLayers.Strategy.Fixed()$strategy]
         });
 
-        map.addLayers([wikilayer$layerweb$layertopic]);
+        map.addLayers([wikilayer$layertopic]);
         $style
 HERE
 
@@ -377,6 +378,7 @@ sub _OPENLAYERSMAP {
 
     my @mapMetadata;
     my @scriptVariable;
+    my $viewPortLayer;
 
     my $mapHeight = $params->{mapheight};
     $mapHeight = '600' unless defined $mapHeight;
@@ -384,13 +386,16 @@ sub _OPENLAYERSMAP {
 #     push @mapMetadata, "mapHeight:$mapHeight";
 
     my $mapWidth = $params->{mapwidth};
-    $mapWidth = 'my800' unless defined $mapWidth;
+    $mapWidth = 'my800' unless defined $mapWidth;  #FullWidth
     $mapWidth = $mapWidth.'px';
 #     push @mapMetadata, "mapHeight:$mapWidth";
 
     my $mapViewPort = $params->{viewport};
     $mapViewPort = '159,-32' unless defined $mapViewPort;
 #     push @mapMetadata, "mapViewPort:$mapViewPort";
+    if ($mapViewPort =~ /$params->{layertopics}/) {
+        $viewPortLayer = 'true';
+    }
 
     my $mapViewPortZoom = $params->{viewportzoom};
     $mapViewPortZoom = '1' unless defined $mapViewPortZoom;
@@ -629,6 +634,11 @@ HERE
 #     map.render('$mapElement');
 # HERE
 
+    if ($viewPortLayer eq 'true') {
+        # Set View port to bounds of $mapViewPort
+    }
+
+
         push @scriptVariable, <<"HERE";
    // if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
    //     map.moveTo(viewportcorner,$mapViewPortZoom);
@@ -637,7 +647,7 @@ HERE
 
     var proj = new OpenLayers.Projection("EPSG:4326");
     if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
-        var point = new OpenLayers.LonLat(133, -28);
+        var point = new OpenLayers.LonLat(viewportcorner);
         point.transform(proj, map.getProjectionObject());
         map.setCenter(point, 4);
         //map.moveTo(viewportcorner,$mapViewPortZoom);

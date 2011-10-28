@@ -1,0 +1,13 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319768451" format="1.1" reprev="7" version="7"}%
+%META:TOPICPARENT{name="Sandbox.WebHome"}%
+-- Main.AdminUser - 25 Oct 2011
+
+%META:FORM{name="Applications/OpenLayers/KMLLayerForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="KML Attachment"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="http://element-bp.nexus.csiro.au/pub/Applications/OpenLayers/Layers/MyKMLFeatures/atrophotergum2.kml"}%
+%META:FIELD{name="ExtractAttributes" attributes="" title="ExtractAttributes" value="on"}%
+%META:FIELD{name="ExtractStyles" attributes="" title="ExtractStyles" value="on"}%
+%META:FIELD{name="Clustering" attributes="" title="Clustering" value="20,5"}%
+%META:FIELD{name="IsVisible" attributes="" title="IsVisible" value=""}%
+%META:FILEATTACHMENT{name="atrophotergum2.kml" attachment="atrophotergum2.kml" attr="" comment="" date="1319518468" path="atrophotergum2.kml" size="93480" user="BaseUserMapping_333" version="1"}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1319759825" from="Sandbox.MyKMLFeatures" to="Applications/OpenLayers/Layers.MyKMLFeatures"}%

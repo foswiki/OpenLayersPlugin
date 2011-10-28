@@ -1,0 +1,11 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319760020" format="1.1" reprev="2" version="2"}%
+-- Main.AdminUser - 26 Oct 2011
+
+%META:FORM{name="Applications/OpenLayers/WMSLayerForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="Great Barrier Reef"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="http://spatial.ala.org.au/geoserver/ALA/wms"}%
+%META:FIELD{name="ServerParams" attributes="" title="ServerParams" value="layers: %22ALA:gbr_gbr100%22,srs: %22EPSG:4326%22,transparent: %22true%22,format: %22image/png%22"}%
+%META:FIELD{name="ClientOptions" attributes="" title="ClientOptions" value="visibility:false, wrapDateLine:true, opacity:0.8"}%
+%META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value=""}%
+%META:FIELD{name="IsVisible" attributes="" title="IsVisible" value=""}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1319760020" from="Sandbox.ALA_GreatBarrierReef" to="Applications/OpenLayers/Layers.ALA_GreatBarrierReef"}%

@@ -1,0 +1,33 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="reprev" date="1319760777" format="1.1" reprev="11" version="11"}%
+%META:TOPICPARENT{name="Sandbox.TestTopic0"}%
+%STARTSECTION{"json"}%{
+    "type": "FeatureCollection",
+    "features": [
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-81, 42]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-71, -7]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-21, 63]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[19, -24]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[4, 42]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-116, 61]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-17, 40]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[32, 35]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[83, 38]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[133, -28]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-53, -18]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[99, 3]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[137, 42]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[77, 21]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[83, 31]}},
+        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[24, 52]}}
+    ]
+}%ENDSECTION{"json"}%
+
+%META:FORM{name="Applications/OpenLayers/WikiVectorForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="TRIN Specimens as GeoJSON"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="Applications/OpenLayers/Layers/TRIN_Specimens"}%
+%META:FIELD{name="Clustering" attributes="" title="Clustering" value="on"}%
+%META:FIELD{name="Format" attributes="" title="Format" value=""}%
+%META:FIELD{name="Protocol" attributes="" title="Protocol" value=""}%
+%META:FIELD{name="Style" attributes="" title="Style" value="default"}%
+%META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value="false"}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1319760752" from="Sandbox.TRIN_SpongeSpecimens" to="Applications/OpenLayers/Layers.TRIN_Specimens"}%

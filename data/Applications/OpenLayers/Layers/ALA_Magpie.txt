@@ -1,0 +1,16 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319759893" format="1.1" reprev="4" version="4"}%
+speciesLayer = new OpenLayers.Layer.WMS(
+                    "Australian Magpie",
+                    "http://biocache.ala.org.au/ws/webportal/wms/reflect",
+                    {   layers: 'ALA:occurrences',srs: 'EPSG:900913',format: 'image/png',cql_filter: "Australian Magpie",transparent: true, env:'color:22a467;name:circle;size:3;opacity:0.8',exceptions:'application-vnd.ogc.se_inimage'
+                    }
+            );
+
+%META:FORM{name="Applications/OpenLayers/WMSLayerForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="Australian Magpie"}%
+%META:FIELD{name="URL" attributes="" title="URL" value="http://biocache.ala.org.au/ws/webportal/wms/reflect"}%
+%META:FIELD{name="ServerParams" attributes="" title="ServerParams" value="layers: 'ALA:occurrences',srs: 'EPSG:4326',format: 'image/png',cql_filter: %22Australian Magpie%22,transparent: true, env:'color:22a467;name:circle;size:3;opacity:0.8',exceptions:'application-vnd.ogc.se_inimage'"}%
+%META:FIELD{name="ClientOptions" attributes="" title="ClientOptions" value=""}%
+%META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value=""}%
+%META:FIELD{name="IsVisible" attributes="" title="IsVisible" value=""}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1319759893" from="Sandbox.ALA_Magpie" to="Applications/OpenLayers/Layers.ALA_Magpie"}%
