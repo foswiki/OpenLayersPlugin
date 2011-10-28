@@ -3,7 +3,6 @@ data/Applications/OpenLayers/KMLLayerForm.txt 0644
 data/Applications/OpenLayers/LayerTypeForm.txt 0644
 data/Applications/OpenLayers/Layers/ALA_GreatBarrierReef.txt 0644
 data/Applications/OpenLayers/Layers/ALA_Magpie.txt 0644
-data/Applications/OpenLayers/Layers/DefaultMap.lease 0644
 data/Applications/OpenLayers/Layers/DefaultMap.txt 0644
 data/Applications/OpenLayers/Layers/Demis_Layer.txt 0644
 data/Applications/OpenLayers/Layers/MyKMLFeatures.txt 0644
@@ -22,7 +21,6 @@ data/Applications/OpenLayers/Layers/WebSearchAdvanced.txt 0644
 data/Applications/OpenLayers/Layers/WebStatistics.txt 0644
 data/Applications/OpenLayers/Layers/WebTopicList.txt 0644
 data/Applications/OpenLayers/Proxy.txt 0644
-data/Applications/OpenLayers/WMSLayerForm.lease 0644
 data/Applications/OpenLayers/WMSLayerForm.txt 0644
 data/Applications/OpenLayers/WebAtom.txt 0644
 data/Applications/OpenLayers/WebChanges.txt 0644
@@ -37,7 +35,6 @@ data/Applications/OpenLayers/WebSearch.txt 0644
 data/Applications/OpenLayers/WebSearchAdvanced.txt 0644
 data/Applications/OpenLayers/WebStatistics.txt 0644
 data/Applications/OpenLayers/WebTopicList.txt 0644
-data/Applications/OpenLayers/WikiVectorForm.lease 0644
 data/Applications/OpenLayers/WikiVectorForm.txt 0644
 data/Applications/OpenLayers/WorldWindForm.txt 0644
 data/Sandbox/PluginTestOpenLayersPlugin.txt 0644
