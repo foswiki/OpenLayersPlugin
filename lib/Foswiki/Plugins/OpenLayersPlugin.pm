@@ -400,7 +400,7 @@ sub _OPENLAYERSMAP {
 #     push @mapMetadata, "mapHeight:$mapWidth";
 
     my $mapViewPort = $params->{viewport};
-    $mapViewPort = '159,-32' unless defined $mapViewPort;
+    $mapViewPort = '149.128847,-35.28052' unless defined $mapViewPort;
 #     push @mapMetadata, "mapViewPort:$mapViewPort";
     if ($mapViewPort =~ /$params->{layertopics}/) {
         $viewPortLayer = 'true';
@@ -649,17 +649,13 @@ HERE
 
 
         push @scriptVariable, <<"HERE";
-   // if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
-   //     map.moveTo(viewportcorner,$mapViewPortZoom);
-   // }
-   var viewportcorner = new OpenLayers.LonLat($mapViewPort);
 
     var proj = new OpenLayers.Projection("EPSG:4326");
-    if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
-        var point = new OpenLayers.LonLat(viewportcorner);
+    if (map.isValidLonLat($mapViewPort) && $mapViewPortZoom) {
+        var point = new OpenLayers.LonLat($mapViewPort);
         point.transform(proj, map.getProjectionObject());
-        map.setCenter(point, 4);
-        //map.moveTo(viewportcorner,$mapViewPortZoom);
+        map.setCenter(point, $mapViewPortZoom);
+        //map.moveTo($mapViewPort,$mapViewPortZoom);
     }
     
     map.render('$mapElement');
