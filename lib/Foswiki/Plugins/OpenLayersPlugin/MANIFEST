@@ -39,6 +39,7 @@ data/Applications/OpenLayers/WikiVectorForm.txt 0644
 data/Applications/OpenLayers/WorldWindForm.txt 0644
 data/Sandbox/PluginTestOpenLayersPlugin.txt 0644
 data/Sandbox/WikiVectorForm.txt 0644
+data/System/OpenLayersPlugin.txt 0644
 lib/Foswiki/Plugins/OpenLayersPlugin.pm 0644
 pub/Applications/OpenLayers/Layers/MyKMLFeatures/atrophotergum2.kml 0644
 pub/Applications/OpenLayers/Layers/MyKMLFeatures/sundials-3.kml 0644

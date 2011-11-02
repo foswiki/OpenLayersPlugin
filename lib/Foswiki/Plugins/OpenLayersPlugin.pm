@@ -226,6 +226,7 @@ sub typehandler_kml {
         $strategy = ", new OpenLayers.Strategy.Cluster()";
     } else {
         $clustering = 'false';
+        $strategy = '';
     }
     
     if ($clustering eq 'true') {
