@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="" date="1319162198" format="1.1" version="2"}%
+%META:TOPICINFO{author="PaulAlexander" comment="" date="1319787254" format="1.1" version="2"}%
 %META:TOPICPARENT{name="Plugins"}%
 ---+ !OpenLayers Plugin
 
@@ -9,11 +9,7 @@ Learn how to create your own plugin in %SYSTEMWEB%.DevelopingPlugins.
 ---++ Plugin Preferences
 
 Plugin preferences should be set using =configure=, as described in
-%SYSTEMWEB%.DevelopingPlugins. You can also use
-[[%SYSTEMWEB%.PreferenceSettings][preference settings]] to define any
-user-controllable configuration. You are strongly advised
-to use the name of the plugin as a prefix, to avoid the risk of namespace
-clashes with other extensions that may try to use the same name.
+%SYSTEMWEB%.DevelopingPlugins. You can also use[[%SYSTEMWEB%.PreferenceSettings][preference settings]] to define anyuser-controllable configuration. You are strongly advisedto use the name of the plugin as a prefix, to avoid the risk of namespaceclashes with other extensions that may try to use the same name.
 
 *BAD*
    * Set EXAMPLE = Example setting
@@ -36,14 +32,12 @@ render a [[http://www.demis.nl][DEMIS]] world map
 | *Parameter* | *Description* | *Example* | *Default* |
 | =mapwidth= | the width of the map div | | full screen width |
 | =mapheight= |  the height of the map div | | =600= |
-| =mapelement= |  the html div element in which the map will be rendered  | | =openlayersmap= |
+| =mapelement= |  the html div element in which the map will be rendered. Set your own div id, and style (=mapwidth= and =mapheight= will be ignored)  | | =openlayersmap= |
 | =viewport= | the longitude,latitude or the web.topic name of the layer (listed in =layers=) which will be used to set the bounds of the viewport | | =159,-38= |
 | =viewportzoom= | the default zoom level of viewport, -1 = no zoom. Values range from 1...n-1 (n = mapnumzoomlevels) | | =-1= |
 | =layers= | comma separated list of topics, each with an defined [[%SCRIPTURL{view}%/%WEB%.%TOPIC%#Defined_Forms][OpenLayers form attached]]  | | If no layers exist the default Demis map is rendered |
 
-
 Example
-
 <verbatim class="tml">
 %OPENLAYERSMAP{
    mapwidth="n600"
@@ -55,9 +49,7 @@ Example
    mapelement="myMap"
    styleobject=""
    basetopics=""
-   }%   
-</verbatim>
-
+   }%   </verbatim>
 
 Preview
 %OPENLAYERSMAP{
@@ -71,23 +63,25 @@ Preview
    styleobject=""
    basetopics=""
    }%
-<div id="myMap" style="position:relative;"></div>
-
-
+<div id="myMap" style="position: relative;"> </div>
 
 ---++ Defined Forms
-OpenLayers comes installed with dataforms defining various layers that can be rendered.
-Set the Web Preferences to point the variable OPENLAYERSPLUGIN_MAPSWEB to the location of these forms and add links for these forms the WEBFORMS varaible in your [[WebPreferences]] that are used
+
+OpenLayers comes installed with dataforms defining various layers that can be rendered.Set the Web Preferences to point the variable OPENLAYERSPLUGIN_MAPSWEB to the location of these forms and add links for these forms the WEBFORMS varaible in your [[WebPreferences]] that are used
 
 ---+++ Defining your own forms
+
 Below is a table of the various Layer types and variables which can be set from a layer form. Ensure you attach the [[Applications/OpenLayers/LayerTypeForm][LayerTypeForm]] and set the value of LayerType to the one of (google, kml, vector, wfs, wms, or worldwind).
-|*LayerType*|*Fields*|*sample*|
-|google| | |
-|kml|Name,URL,Clustering|MyKMLFeatures|
-|vector|Name,URL,Clustering|Wiki|
-|wfs| | |
-|wms|Name,URL, ServerParams{Object}, ClientOptions{Object}|[[%OPENLAYERSPLUGIN_MAPSWEB%.WMSLayerForm][ALA_GreatBarrierReef]]|
-|worldwind|Name,URL,TileSize,ZoomLevels,ServerParams,ClientOptions,IsBaseLayer,IsVisible|[[%OPENLAYERSPLUGIN_MAPSWEB%.WorldWindForm][Demis]]|
+| *LayerType* | *Fields* | *sample* |
+| google | | |
+| kml | Name,URL,Clustering | MyKMLFeatures |
+| vector | Name,URL,Clustering | Wiki |
+| wfs | | |
+| wms | Name,URL, ServerParams{Object}, ClientOptions{Object} | [[%OPENLAYERSPLUGIN_MAPSWEB%.WMSLayerForm][ALA_GreatBarrierReef]] |
+| worldwind | Name,URL,TileSize,ZoomLevels,ServerParams,ClientOptions,IsBaseLayer,IsVisible | [[%OPENLAYERSPLUGIN_MAPSWEB%.WorldWindForm][Demis]] |
+
+---++TO DO
+Work up some examples using GeoJSON
 
 ---++ Installation
 
@@ -96,12 +90,38 @@ Below is a table of the various Layer types and variables which can be set from 
 ---++ Plugin Info
 
 |  Author: | Foswiki:Main.PaulAlexander |
-|  Copyright: | © 2011, [[http://taxonomy.org.au][Taxonomy Research & Information Network]], Foswiki Contributors %BR%\ This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is Copyright (c) !OpenLayers Contributors, see [[%ATTACHURLPATH%/scripts/api/2/doc/authors.txt][authors.txt]] |
-|  License: | This Foswiki plugin is licensed under the GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License Version 3]])%BR% \
-This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is licensed under the [[%ATTACHURLPATH%/scripts/api/2/license.txt][2-clause BSD License]], which in turn includes code licensed under the [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/APACHE-2.0.txt][Apache 2.0]] and [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/MIT-LICENSE.txt][MIT]] licenses. See [[%ATTACHURLPATH%/scripts/api/2/OpenLayers.js][OpenLayers.js]] for full copyright headers and notices. |
+|  Copyright: | Â© 2011, [[http://taxonomy.org.au][Taxonomy Research & Information Network]], Foswiki Contributors %BR%\ This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is Copyright (c) !OpenLayers Contributors, see [[%ATTACHURLPATH%/scripts/api/2/doc/authors.txt][authors.txt]] |
+|  License: | This Foswiki plugin is licensed under the GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License Version 3]])%BR%This plugin uses [[http://openlayers.org][OpenLayers]] javascript, which is licensed under the [[%ATTACHURLPATH%/scripts/api/2/license.txt][2-clause BSD License]], which in turn includes code licensed under the [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/APACHE-2.0.txt][Apache 2.0]] and [[%ATTACHURLPATH%/scripts/api/2/doc/licenses/MIT-LICENSE.txt][MIT]] licenses. See [[%ATTACHURLPATH%/scripts/api/2/OpenLayers.js][OpenLayers.js]] for full copyright headers and notices. |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
 |  XX Mmm 20XX (1.0) | Description of change |
 |  Home: | http://foswiki.org/Extensions/%TOPIC% |
 |  Support: | http://foswiki.org/Support/%TOPIC% |
+
+%META:LINK{name="21" address="System.MyKMLFeatures" scope="internal" topic="MyKMLFeatures" type="autolink" web="System"}%
+%META:LINK{name="9" address="http://openlayers.org" scope="external" type="bracket"}%
+%META:LINK{name="4" address="System.WebPreferences" scope="internal" topic="WebPreferences" type="bracket" web="System"}%
+%META:LINK{name="17" address="http://foswiki.org/Support/OpenLayersPlugin" scope="external" type="autolink"}%
+%META:LINK{name="13" address="%25ATTACHURLPATH%25/scripts/api/2/doc/licenses/APACHE-2/0.txt" scope="internal" topic="txt" type="bracket" web="%25ATTACHURLPATH%25/scripts/api/2/doc/licenses/APACHE-2/0"}%
+%META:LINK{name="16" address="http://foswiki.org/Extensions/OpenLayersPlugin" scope="external" type="autolink"}%
+%META:LINK{name="15" address="%25ATTACHURLPATH%25/scripts/api/2/OpenLayers.js" scope="internal" topic="js" type="bracket" web="%25ATTACHURLPATH%25/scripts/api/2/OpenLayers"}%
+%META:LINK{name="23" address="System.ClientOptions" scope="internal" topic="ClientOptions" type="autolink" web="System"}%
+%META:LINK{name="18" address="System.DevelopingPlugins" scope="internal" topic="DevelopingPlugins" type="autolink" web="System"}%
+%META:LINK{name="14" address="%25ATTACHURLPATH%25/scripts/api/2/doc/licenses/MIT-LICENSE.txt" scope="internal" topic="txt" type="bracket" web="%25ATTACHURLPATH%25/scripts/api/2/doc/licenses/MIT-LICENSE"}%
+%META:LINK{name="20" address="System.LayerType" scope="internal" topic="LayerType" type="autolink" web="System"}%
+%META:LINK{name="12" address="%25ATTACHURLPATH%25/scripts/api/2/license.txt" scope="internal" topic="txt" type="bracket" web="%25ATTACHURLPATH%25/scripts/api/2/license"}%
+%META:LINK{name="2" address="http://www.demis.nl" scope="external" type="bracket"}%
+%META:LINK{name="3" address="%25SCRIPTURL%7bview%7d%25/System.OpenLayersPlugin" scope="internal" topic="OpenLayersPlugin" type="bracket" web="%25SCRIPTURL%7bview%7d%25/System"}%
+%META:LINK{name="11" address="http://www.gnu.org/copyleft/gpl.html" scope="external" type="bracket"}%
+%META:LINK{name="1" address="System.PreferenceSettings" scope="internal" topic="PreferenceSettings" type="bracket" web="System"}%
+%META:LINK{name="22" address="System.ServerParams" scope="internal" topic="ServerParams" type="autolink" web="System"}%
+%META:LINK{name="10" address="%25ATTACHURLPATH%25/scripts/api/2/doc/authors.txt" scope="internal" topic="txt" type="bracket" web="%25ATTACHURLPATH%25/scripts/api/2/doc/authors"}%
+%META:LINK{name="24" address="System.GeoJSON" scope="internal" topic="GeoJSON" type="autolink" web="System"}%
+%META:LINK{name="8" address="http://taxonomy.org.au" scope="external" type="bracket"}%
+%META:LINK{name="6" address="%25OPENLAYERSPLUGIN_MAPSWEB%25.WMSLayerForm" scope="internal" topic="WMSLayerForm" type="bracket" web="%25OPENLAYERSPLUGIN_MAPSWEB%25"}%
+%META:LINK{name="19" address="System.OpenLayers" scope="internal" topic="OpenLayers" type="autolink" web="System"}%
+%META:LINK{name="7" address="%25OPENLAYERSPLUGIN_MAPSWEB%25.WorldWindForm" scope="internal" topic="WorldWindForm" type="bracket" web="%25OPENLAYERSPLUGIN_MAPSWEB%25"}%
+%META:LINK{name="5" address="Applications/OpenLayers.LayerTypeForm" scope="internal" topic="LayerTypeForm" type="bracket" web="Applications/OpenLayers"}%
+%META:PREFERENCE{name="PERM_ID_HUMAN" title="PERM_ID_HUMAN" type="Local" value="System_OpenLayersPlugin"}%
+%META:PREFERENCE{name="PERM_ID_MD5" title="PERM_ID_MD5" type="Local" value="93dd9b231130c6c565d5e4a25670ff43"}%
