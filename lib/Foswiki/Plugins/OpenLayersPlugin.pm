@@ -188,8 +188,8 @@ sub typehandler_kml {
     my @fields = $layerObject->find('FIELD');
     my %data;
     my @returnString;
-    my $strategy;
-    my $style;
+    my $strategy='';
+    my $style='';
     
     foreach my $field (@fields) {
         $data{$field->{name}} = $field->{value};
@@ -226,7 +226,6 @@ sub typehandler_kml {
         $strategy = ", new OpenLayers.Strategy.Cluster()";
     } else {
         $clustering = 'false';
-        $strategy = '';
     }
     
     if ($clustering eq 'true') {
