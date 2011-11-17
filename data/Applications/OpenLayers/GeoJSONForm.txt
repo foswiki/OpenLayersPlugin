@@ -1,0 +1,10 @@
+%META:TOPICINFO{author="BaseUserMapping_333" comment="reprev" date="1321500456" format="1.1" reprev="1" version="1"}%
+%META:TOPICPARENT{name="WebHome"}%
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| Name | text |  |  |  |  |
+| URL | text |  |  |  |  |
+
+
+%META:FORM{name="LayerTypeForm"}%
+%META:FIELD{name="LayerType" attributes="" title="LayerType" value="geojson"}%
+%META:TOPICMOVED{by="BaseUserMapping_333" date="1321500456" from="Applications/OpenLayers.GeoJSONExternal" to="Applications/OpenLayers.GeoJSONForm"}%

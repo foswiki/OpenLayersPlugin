@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="PaulAlexander" comment="" date="1319787254" format="1.1" version="2"}%
+%META:TOPICINFO{author="BaseUserMapping_333" comment="reprev" date="1321500558" format="1.1" reprev="3" version="3"}%
 %META:TOPICPARENT{name="Plugins"}%
 ---+ !OpenLayers Plugin
 
@@ -36,8 +36,8 @@ render a [[http://www.demis.nl][DEMIS]] world map
 | =viewport= | the longitude,latitude or the web.topic name of the layer (listed in =layers=) which will be used to set the bounds of the viewport | | =159,-38= |
 | =viewportzoom= | the default zoom level of viewport, -1 = no zoom. Values range from 1...n-1 (n = mapnumzoomlevels) | | =-1= |
 | =layers= | comma separated list of topics, each with an defined [[%SCRIPTURL{view}%/%WEB%.%TOPIC%#Defined_Forms][OpenLayers form attached]]  | | If no layers exist the default Demis map is rendered |
-
 Example
+
 <verbatim class="tml">
 %OPENLAYERSMAP{
    mapwidth="n600"
@@ -45,7 +45,7 @@ Example
    viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
    mapprojection="EPSG:4326"
-   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/BiosecurityGeoJSON"
    mapelement="myMap"
    styleobject=""
    basetopics=""
@@ -58,12 +58,11 @@ Preview
    viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
    mapprojection="EPSG:4326"
-   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/BiosecurityGeoJSON"
    mapelement1="myMap"
    styleobject=""
    basetopics=""
    }%
-<div id="myMap" style="position: relative;"> </div>
 
 ---++ Defined Forms
 
@@ -72,6 +71,15 @@ OpenLayers comes installed with dataforms defining various layers that can be re
 ---+++ Defining your own forms
 
 Below is a table of the various Layer types and variables which can be set from a layer form. Ensure you attach the [[Applications/OpenLayers/LayerTypeForm][LayerTypeForm]] and set the value of LayerType to the one of (google, kml, vector, wfs, wms, or worldwind).
+%SEARCH{"form.name='LayerTypeForm'"
+   type="query"
+   web="Applications/OpenLayers"
+   nonoise="on"
+   zeroresults="No Results"
+   header="| *LayerType* | *Fields* |"
+   format="|$formfield(LayerType)|$web.$topic|"
+}%
+
 | *LayerType* | *Fields* | *sample* |
 | google | | |
 | kml | Name,URL,Clustering | MyKMLFeatures |
@@ -79,8 +87,9 @@ Below is a table of the various Layer types and variables which can be set from 
 | wfs | | |
 | wms | Name,URL, ServerParams{Object}, ClientOptions{Object} | [[%OPENLAYERSPLUGIN_MAPSWEB%.WMSLayerForm][ALA_GreatBarrierReef]] |
 | worldwind | Name,URL,TileSize,ZoomLevels,ServerParams,ClientOptions,IsBaseLayer,IsVisible | [[%OPENLAYERSPLUGIN_MAPSWEB%.WorldWindForm][Demis]] |
+ 
+---++ TO DO
 
----++TO DO
 Work up some examples using GeoJSON
 
 ---++ Installation

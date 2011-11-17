@@ -40,10 +40,10 @@ our $NO_PREFS_IN_TOPIC = 1;
 
 
 
-my $pubUrlPath ;
+my $pubUrlPath ='' ;
 # my $hostUrl;
-my $isGoogleLayer;
-my $mapProjection;
+my $isGoogleLayer='';
+my $mapProjection ='';
 
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
@@ -248,14 +248,20 @@ HERE
     } else {
         return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
+    
+    my $text = "%INCLUDE{\"".$data{URL}."\"}%";
+    my $geojsonfeatures='';
+    
+    $geojsonfeatures = Foswiki::Func::expandCommonVariables($text);
         
     push @returnString, <<"HERE";
         var geojsonlayer$layertopic = new OpenLayers.Layer.Vector(); 
         var geojsonformat$layertopic = new OpenLayers.Format.GeoJSON();
+        var featurecollection = $geojsonfeatures;
   
         map.addLayers([geojsonlayer$layertopic]);
     
-        geojsonlayer$layertopic.addFeatures(geojsonformat$layertopic.read(featurecollection))
+        geojsonlayer$layertopic.addFeatures(geojsonformat$layertopic.read(featurecollection));
 
 
     $style
@@ -472,7 +478,7 @@ sub _OPENLAYERSMAP {
 
     my @mapMetadata;
     my @scriptVariable;
-    my $viewPortLayer;
+    my $viewPortLayer ='';
 
     my $mapHeight = $params->{mapheight};
     $mapHeight = '600' unless defined $mapHeight;
