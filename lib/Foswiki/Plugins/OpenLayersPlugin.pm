@@ -182,6 +182,91 @@ HERE
     return $returnString;
 
 }
+
+sub typehandler_geojson {
+    my ($layerObject, $layerFormObject) = @_;
+    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my @fields = $layerObject->find('FIELD');
+    my %data;
+    my @returnString;
+    my $strategy;
+    my $style;
+    
+    foreach my $field (@fields) {
+        $data{$field->{name}} = $field->{value};
+    }
+    
+    #my $extractStyles = $data{ExtractStyles};
+    my $extractStyles = Foswiki::Func::isTrue($data{ExtractStyles}, 0) ? 'true' : 'false';
+    #'off' unless defined $extractStyles;
+    #$extractStyles = ($extractStyles eq 'on')?'true':'false';
+    
+    #my $extractAttributes = $data{ExtractAttributes};
+    #$extractAttributes = 'on' unless defined $extractAttributes;
+    #$extractAttributes = ($extractAttributes eq 'on')?'true':'false';
+    my $extractAttributes = Foswiki::Func::isTrue($data{ExtractAttributes}, 0) ? 'true' : 'false';
+    
+    #my $isBaseLayer = $data{IsBaseLayer};
+    #$isBaseLayer = 'false' unless defined $isBaseLayer;
+    #$isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
+    my $isBaseLayer = Foswiki::Func::isTrue($data{IsBaseLayer}, 0) ? 'true' : 'false';
+    
+    my $clustering = $data{Clustering};
+#     my $distance;
+#     my $threshold;
+    $clustering = 'on' unless defined $clustering;
+#     $clustering = ($clustering eq 'on')?'true':'false';
+    
+    if ($clustering && $clustering =~ /^(\d+),\s*(\d+)$/) {
+        my $distance = $1;
+        my $threshold = $2;
+        $strategy = ", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
+        $clustering = 'true';
+    } elsif (Foswiki::Func::isTrue($clustering, 1)) {
+        $clustering = 'true';
+        $strategy = ", new OpenLayers.Strategy.Cluster()";
+    } else {
+        $clustering = 'false';
+    }
+    
+    if ($clustering eq 'true') {
+         $style=<<"HERE";
+        //Create a style map object and set the 'default' intent to the
+    var vector_style_map$layertopic = new OpenLayers.StyleMap({
+        'default': style
+    });
+//Add the style map to the vector layer threshold, distance
+    geojsonlayer$layertopic.styleMap = vector_style_map$layertopic;
+HERE
+    }
+    
+    if ($data{URL} and $data{URL} =~ /\w/) {
+        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
+            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
+            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+        }
+    } else {
+        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+        
+    push @returnString, <<"HERE";
+        var geojsonlayer$layertopic = new OpenLayers.Layer.Vector(); 
+        var geojsonformat$layertopic = new OpenLayers.Format.GeoJSON();
+  
+        map.addLayers([geojsonlayer$layertopic]);
+    
+        geojsonlayer$layertopic.addFeatures(geojsonformat$layertopic.read(featurecollection))
+
+
+    $style
+HERE
+
+    my $returnString = "\n".join("\n", @returnString)."\n";
+    
+    return $returnString;
+
+}
+
 sub typehandler_kml {
     my ($layerObject, $layerFormObject) = @_;
     my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
