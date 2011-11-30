@@ -347,7 +347,8 @@ HERE
                     url: "$data{URL}",
                     format: new OpenLayers.Format.KML({
                         extractStyles: $extractStyles,
-                        extractAttributes: $extractAttributes
+                        extractAttributes: $extractAttributes,
+                        
                     })
                 })
             }); 
