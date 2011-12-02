@@ -1,2 +1,1 @@
-%META:TOPICINFO{author="BaseUserMapping_333" date="1319437117" format="1.1" version="1"}%
 %INCLUDE{"%SYSTEMWEB%.%TOPIC%"}%

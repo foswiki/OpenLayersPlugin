@@ -1,0 +1,6 @@
+| *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
+| Name | text | | | | |
+| URL | text | | | | |
+
+%META:FORM{name="LayerTypeForm"}%
+%META:FIELD{name="LayerType" attributes="" title="LayerType" value="gml"}%

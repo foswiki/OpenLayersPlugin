@@ -1,26 +1,47 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="reprev" date="1319760777" format="1.1" reprev="11" version="11"}%
 %META:TOPICPARENT{name="Sandbox.TestTopic0"}%
 %STARTSECTION{"json"}%{
     "type": "FeatureCollection",
     "features": [
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-81, 42]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-71, -7]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-21, 63]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[19, -24]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[4, 42]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-116, 61]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-17, 40]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[32, 35]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[83, 38]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[133, -28]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[-53, -18]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[99, 3]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[137, 42]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[77, 21]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[83, 31]}},
-        {"type":"Feature","properties":{}, "geometry":{"type":"Point", "coordinates":[24, 52]}}
+        {"type":"Feature","properties":{"Specimen":"G123456"}, "geometry":{"type":"Point", "coordinates":[-81, 42]}, "id":"1" },
+        {"type":"Feature","properties":{"Specimen":"G234567"}, "geometry":{"type":"Point", "coordinates":[-71, -7]}, "id":"2"},
+        {"type":"Feature","properties":{"Specimen":"G345678"}, "geometry":{"type":"Point", "coordinates":[-21, 63]}, "id":"3"},
+        {"type":"Feature","properties":{"Specimen":"G456789"}, "geometry":{"type":"Point", "coordinates":[19, -24]}, "id":"4"},
+        {"type":"Feature","properties":{"Specimen":"G567891"}, "geometry":{"type":"Point", "coordinates":[4, 42]}, "id":"5"},
+        {"type":"Feature","properties":{"Specimen":"G678910"}, "geometry":{"type":"Point", "coordinates":[-116, 61]}, "id":"6"},
+        {"type":"Feature","properties":{"Specimen":"G789101"}, "geometry":{"type":"Point", "coordinates":[-17, 40]}, "id":"7"},
+        {"type":"Feature","properties":{"Specimen":"G891011"}, "geometry":{"type":"Point", "coordinates":[32, 35]}, "id":"8"},
+        {"type":"Feature","properties":{"Specimen":"G910111"}, "geometry":{"type":"Point", "coordinates":[83, 38]}, "id":"9"},
+        {"type":"Feature","properties":{"Specimen":"G101112"}, "geometry":{"type":"Point", "coordinates":[133, -28]}, "id":"10"},
+        {"type":"Feature","properties":{"Specimen":"G111213"}, "geometry":{"type":"Point", "coordinates":[-53, -18]}, "id":"11"},
+        {"type":"Feature","properties":{"Specimen":"G121314"}, "geometry":{"type":"Point", "coordinates":[99, 3]}, "id":"12"},
+        {"type":"Feature","properties":{"Specimen":"G131415"}, "geometry":{"type":"Point", "coordinates":[137, 42]}, "id":"13"},
+        {"type":"Feature","properties":{"Specimen":"G141516"}, "geometry":{"type":"Point", "coordinates":[77, 21]}, "id":"14"},
+        {"type":"Feature","properties":{"Specimen":"G151617"}, "geometry":{"type":"Point", "coordinates":[83, 31]}, "id":"15"},
+        {"type":"Feature","properties":{"Specimen":"G161718"}, "geometry":{"type":"Point", "coordinates":[24, 52]}, "id":"16"}
     ]
 }%ENDSECTION{"json"}%
+
+%STARTSECTION{"geojson"}%{
+    "type": "FeatureCollection",
+    "features": [
+        {"type":"Feature","properties":{"Specimen":"G123456"}, "geometry":{"type":"Point", "coordinates":[-81, 42]}, "id":"1" },
+        {"type":"Feature","properties":{"Specimen":"G234567"}, "geometry":{"type":"Point", "coordinates":[-71, -7]}, "id":"2"},
+        {"type":"Feature","properties":{"Specimen":"G345678"}, "geometry":{"type":"Point", "coordinates":[-21, 63]}, "id":"3"},
+        {"type":"Feature","properties":{"Specimen":"G456789"}, "geometry":{"type":"Point", "coordinates":[19, -24]}, "id":"4"},
+        {"type":"Feature","properties":{"Specimen":"G567891"}, "geometry":{"type":"Point", "coordinates":[4, 42]}, "id":"5"},
+        {"type":"Feature","properties":{"Specimen":"G678910"}, "geometry":{"type":"Point", "coordinates":[-116, 61]}, "id":"6"},
+        {"type":"Feature","properties":{"Specimen":"G789101"}, "geometry":{"type":"Point", "coordinates":[-17, 40]}, "id":"7"},
+        {"type":"Feature","properties":{"Specimen":"G891011"}, "geometry":{"type":"Point", "coordinates":[32, 35]}, "id":"8"},
+        {"type":"Feature","properties":{"Specimen":"G910111"}, "geometry":{"type":"Point", "coordinates":[83, 38]}, "id":"9"},
+        {"type":"Feature","properties":{"Specimen":"G101112"}, "geometry":{"type":"Point", "coordinates":[133, -28]}, "id":"10"},
+        {"type":"Feature","properties":{"Specimen":"G111213"}, "geometry":{"type":"Point", "coordinates":[-53, -18]}, "id":"11"},
+        {"type":"Feature","properties":{"Specimen":"G121314"}, "geometry":{"type":"Point", "coordinates":[99, 3]}, "id":"12"},
+        {"type":"Feature","properties":{"Specimen":"G131415"}, "geometry":{"type":"Point", "coordinates":[137, 42]}, "id":"13"},
+        {"type":"Feature","properties":{"Specimen":"G141516"}, "geometry":{"type":"Point", "coordinates":[77, 21]}, "id":"14"},
+        {"type":"Feature","properties":{"Specimen":"G151617"}, "geometry":{"type":"Point", "coordinates":[83, 31]}, "id":"15"},
+        {"type":"Feature","properties":{"Specimen":"G161718"}, "geometry":{"type":"Point", "coordinates":[24, 52]}, "id":"16"}
+    ]
+}%ENDSECTION{"geojson"}%
 
 %META:FORM{name="Applications/OpenLayers/WikiVectorForm"}%
 %META:FIELD{name="Name" attributes="" title="Name" value="TRIN Specimens as GeoJSON"}%
@@ -31,3 +52,4 @@
 %META:FIELD{name="Style" attributes="" title="Style" value="default"}%
 %META:FIELD{name="IsBaseLayer" attributes="" title="IsBaseLayer" value="false"}%
 %META:TOPICMOVED{by="BaseUserMapping_333" date="1319760752" from="Sandbox.TRIN_SpongeSpecimens" to="Applications/OpenLayers/Layers.TRIN_Specimens"}%
+%META:LINK{name="1" address="Applications/OpenLayers/Layers.GeoJSON" scope="internal" topic="GeoJSON" type="autolink" web="Applications/OpenLayers/Layers"}%

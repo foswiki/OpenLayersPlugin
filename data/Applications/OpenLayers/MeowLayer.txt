@@ -1,0 +1,5 @@
+
+
+%META:FORM{name="GMLForm"}%
+%META:FIELD{name="Name" attributes="" title="Name" value="MEOW Layer"}%
+%META:FIELD{name="URL" attributes="" title="URL" value=""}%

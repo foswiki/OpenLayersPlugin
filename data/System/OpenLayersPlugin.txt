@@ -1,4 +1,3 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="reprev" date="1321500558" format="1.1" reprev="3" version="3"}%
 %META:TOPICPARENT{name="Plugins"}%
 ---+ !OpenLayers Plugin
 
@@ -45,7 +44,7 @@ Example
    viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
    mapprojection="EPSG:4326"
-   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/BiosecurityGeoJSON"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/MarineEcoRegions"
    mapelement="myMap"
    styleobject=""
    basetopics=""
@@ -58,7 +57,7 @@ Preview
    viewport1="Applications/OpenLayers/Layers/ALA_GreatBarrierReef"
    viewportzoom="-1"
    mapprojection="EPSG:4326"
-   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/BiosecurityGeoJSON"
+   layertopics="Applications/OpenLayers/Layers/DefaultMap,Applications/OpenLayers/Layers/Demis_Layer,Applications/OpenLayers/Layers/ALA_GreatBarrierReef,Applications/OpenLayers/Layers/TRIN_Specimens,Applications/OpenLayers/Layers/MyKMLFeatures,Applications/OpenLayers/Layers/MarineEcoRegions"
    mapelement1="myMap"
    styleobject=""
    basetopics=""
@@ -132,5 +131,3 @@ Work up some examples using GeoJSON
 %META:LINK{name="19" address="System.OpenLayers" scope="internal" topic="OpenLayers" type="autolink" web="System"}%
 %META:LINK{name="7" address="%25OPENLAYERSPLUGIN_MAPSWEB%25.WorldWindForm" scope="internal" topic="WorldWindForm" type="bracket" web="%25OPENLAYERSPLUGIN_MAPSWEB%25"}%
 %META:LINK{name="5" address="Applications/OpenLayers.LayerTypeForm" scope="internal" topic="LayerTypeForm" type="bracket" web="Applications/OpenLayers"}%
-%META:PREFERENCE{name="PERM_ID_HUMAN" title="PERM_ID_HUMAN" type="Local" value="System_OpenLayersPlugin"}%
-%META:PREFERENCE{name="PERM_ID_MD5" title="PERM_ID_MD5" type="Local" value="93dd9b231130c6c565d5e4a25670ff43"}%

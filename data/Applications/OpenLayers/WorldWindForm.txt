@@ -1,4 +1,3 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319503546" format="1.1" reprev="1" version="1"}%
 %META:TOPICPARENT{name="WebTopicList"}%
 | *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
 | Name | text | | | {String} | |

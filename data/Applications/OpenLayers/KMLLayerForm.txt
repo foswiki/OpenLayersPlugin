@@ -1,4 +1,3 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="save topic" date="1319673534" format="1.1" reprev="3" version="3"}%
 | *Name* | *Type* | *Size* | *Values* | *Tooltips* | *Attributes* |
 | Name | text | | | {String} | |
 | URL | text | | | {String} Base URL | |
