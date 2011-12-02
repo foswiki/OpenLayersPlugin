@@ -143,23 +143,24 @@ sub _getJSON {
                     );
                 }
                 else {
-                    $output = "$url did not return valid JSON.";
+                    $output = "502 Bad Gateway\n\nInvalid JSON from $url";
                     $response->header( %header, -status => 502 );
                 }
             }
             else {
                 $output =
-                  "Request to $url failed: " . $ua_response->status_line();
+"500 Internal Server Error\n\nRequest failed $url\n\nError was: '"
+                  . $ua_response->status_line() . "'";
                 $response->header( %header, -status => 500 );
             }
         }
         else {
-            $output = "$url not in whitelist";
+            $output = "403 Forbidden\n\nURL not whitelisted $url";
             $response->header( %header, -status => 403 );
         }
     }
     else {
-        $output = 'Invalid request: missing url';
+        $output = "400 Bad Request\n\nMissing url parameter";
         $response->header( %header, -status => 400 );
     }
 
