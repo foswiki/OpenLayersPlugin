@@ -1,4 +1,4 @@
-   
+
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2011 Taxonomy Research & Information Network (TRIN), http://taxonomy.org.au/
@@ -35,15 +35,13 @@ our $RELEASE = '1.1.1';
 # One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
 our $SHORTDESCRIPTION = 'OpenLayers Javascript library for Foswiki';
 
-
 our $NO_PREFS_IN_TOPIC = 1;
 
+my $pubUrlPath = '';
 
-
-my $pubUrlPath ='' ;
 # my $hostUrl;
-my $isGoogleLayer='';
-my $mapProjection ='';
+my $isGoogleLayer = '';
+my $mapProjection = '';
 
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
@@ -55,17 +53,17 @@ sub initPlugin {
         return 0;
     }
 
-
-   # check for prerequisites
-   unless (defined(&Foswiki::Func::addToZone)) {
-      Foswiki::Func::writeWarning(
-          "ZonePlugin not installed/enabled...disabling OpenLayersPlugin");
-      return 0;
-  }
+    # check for prerequisites
+    unless ( defined(&Foswiki::Func::addToZone) ) {
+        Foswiki::Func::writeWarning(
+            "ZonePlugin not installed/enabled...disabling OpenLayersPlugin");
+        return 0;
+    }
     require Foswiki::Plugins::JQueryPlugin;
 
     $pubUrlPath = Foswiki::Func::getPubUrlPath();
-#     $hostUrL    = Foswiki::Func::getUrlHost();
+
+    #     $hostUrL    = Foswiki::Func::getUrlHost();
     # Example code of how to get a preference value, register a macro
     # handler and register a RESTHandler (remove code you do not need)
 
@@ -83,11 +81,11 @@ sub initPlugin {
     # This will be called whenever %EXAMPLETAG% or %EXAMPLETAG{...}% is
     # seen in the topic text.
     Foswiki::Func::registerTagHandler( 'OPENLAYERSMAP', \&_OPENLAYERSMAP );
-    Foswiki::Func::registerRESTHandler( 'getJSON', \&_proxyHandler);
+    Foswiki::Func::registerRESTHandler( 'getJSON', \&_proxyHandler );
 
     # Allow a sub to be called from the REST interface
     # using the provided alias
-#     Foswiki::Func::registerRESTHandler( 'openlayersmap', \&restExample );
+    #     Foswiki::Func::registerRESTHandler( 'openlayersmap', \&restExample );
 
     # Plugin correctly initialized
     return 1;
@@ -99,7 +97,7 @@ sub _filterJSON {
 
     eval {
         require JSON;
-        $json = JSON->new->encode(JSON->new->decode($text));
+        $json = JSON->new->encode( JSON->new->decode($text) );
         1;
     };
 
@@ -107,24 +105,25 @@ sub _filterJSON {
 }
 
 sub _proxyHandler {
-    my ($session, $plugin, $verb, $response) = @_;
+    my ( $session, $plugin, $verb, $response ) = @_;
     my $requestObj = Foswiki::Func::getRequestObject();
-    my $url = $requestObj->param('url');
+    my $url        = $requestObj->param('url');
     my $output;
 
-    if ($url && $url =~ /\w/) {
+    if ( $url && $url =~ /\w/ ) {
         require LWP::UserAgent;
         my $ua = LWP::UserAgent->new();
         $ua->timeout(10);
         $ua->env_proxy();
         my $ua_response = $ua->get($url);
 
-        if ($ua_response->is_success()) {
-            my $json = _filterJSON($ua_response->decoded_content());
+        if ( $ua_response->is_success() ) {
+            my $json = _filterJSON( $ua_response->decoded_content() );
 
-            if (defined $json) {
+            if ( defined $json ) {
                 $output = $json;
-            } else {
+            }
+            else {
                 $output = "$url did not return valid JSON.";
                 $response->header(
                     -status  => 502,
@@ -141,7 +140,8 @@ sub _proxyHandler {
                 -charset => 'UTF-8'
             );
         }
-    } else {
+    }
+    else {
         $output = 'Invalid request: missing url';
         $response->header(
             -status  => 400,
@@ -154,24 +154,29 @@ sub _proxyHandler {
 }
 
 sub typehandler_worldwind {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
-    my @returnString;    
-    
+    my @returnString;
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-    if ($data{URL} and $data{URL} =~ /\w/) {
-        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
-            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
-            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+    if ( $data{URL} and $data{URL} =~ /\w/ ) {
+        if ( not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/ ) {
+            my ( $dataweb, $datatopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $data{URL} );
+            $data{URL} = Foswiki::Func::getScriptUrl( $dataweb, $datatopic,
+                qw(view skin text section json) );
         }
-    } else {
-        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-        
+    else {
+        return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+
     push @returnString, <<"HERE";
         var wwlayer$layertopic = new OpenLayers.Layer.WorldWind( "$data{Name}",
             "$data{URL}", $data{TileSize}, $data{ZoomLevels},
@@ -179,24 +184,25 @@ sub typehandler_worldwind {
         map.addLayers([wwlayer$layertopic]);
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
 
 sub typehandler_google {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
-    my @returnString;    
+    my @returnString;
     $isGoogleLayer = 'true';
-    
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-        
+
     push @returnString, <<"HERE";
         var googlelayer$layertopic = new OpenLayers.Layer.Google.v3(
             "$data{Name}",
@@ -205,31 +211,36 @@ sub typehandler_google {
         map.addLayers([googlelayer$layertopic]);
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
 
 sub typehandler_wms {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
-    my @returnString;     
-    
+    my @returnString;
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-    if ($data{URL} and $data{URL} =~ /\w/) {
-        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
-            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
-            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+    if ( $data{URL} and $data{URL} =~ /\w/ ) {
+        if ( not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/ ) {
+            my ( $dataweb, $datatopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $data{URL} );
+            $data{URL} = Foswiki::Func::getScriptUrl( $dataweb, $datatopic,
+                qw(view skin text section json) );
         }
-    } else {
-        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-        
+    else {
+        return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+
     push @returnString, <<"HERE";
         var wmslayer$layertopic = new OpenLayers.Layer.WMS(
             '$data{Name}',
@@ -238,60 +249,70 @@ sub typehandler_wms {
         map.addLayers([wmslayer$layertopic]);
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
 
 sub typehandler_geojson {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
     my @returnString;
     my $strategy;
     my $style;
-    
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-    
+
     #my $extractStyles = $data{ExtractStyles};
-    my $extractStyles = Foswiki::Func::isTrue($data{ExtractStyles}, 0) ? 'true' : 'false';
+    my $extractStyles =
+      Foswiki::Func::isTrue( $data{ExtractStyles}, 0 ) ? 'true' : 'false';
+
     #'off' unless defined $extractStyles;
     #$extractStyles = ($extractStyles eq 'on')?'true':'false';
-    
+
     #my $extractAttributes = $data{ExtractAttributes};
     #$extractAttributes = 'on' unless defined $extractAttributes;
     #$extractAttributes = ($extractAttributes eq 'on')?'true':'false';
-    my $extractAttributes = Foswiki::Func::isTrue($data{ExtractAttributes}, 0) ? 'true' : 'false';
-    
+    my $extractAttributes =
+      Foswiki::Func::isTrue( $data{ExtractAttributes}, 0 ) ? 'true' : 'false';
+
     #my $isBaseLayer = $data{IsBaseLayer};
     #$isBaseLayer = 'false' unless defined $isBaseLayer;
     #$isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
-    my $isBaseLayer = Foswiki::Func::isTrue($data{IsBaseLayer}, 0) ? 'true' : 'false';
-    
+    my $isBaseLayer =
+      Foswiki::Func::isTrue( $data{IsBaseLayer}, 0 ) ? 'true' : 'false';
+
     my $clustering = $data{Clustering};
-#     my $distance;
-#     my $threshold;
+
+    #     my $distance;
+    #     my $threshold;
     $clustering = 'on' unless defined $clustering;
-#     $clustering = ($clustering eq 'on')?'true':'false';
-    
-    if ($clustering && $clustering =~ /^(\d+),\s*(\d+)$/) {
-        my $distance = $1;
+
+    #     $clustering = ($clustering eq 'on')?'true':'false';
+
+    if ( $clustering && $clustering =~ /^(\d+),\s*(\d+)$/ ) {
+        my $distance  = $1;
         my $threshold = $2;
-        $strategy = ", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
+        $strategy =
+", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
         $clustering = 'true';
-    } elsif (Foswiki::Func::isTrue($clustering, 1)) {
+    }
+    elsif ( Foswiki::Func::isTrue( $clustering, 1 ) ) {
         $clustering = 'true';
-        $strategy = ", new OpenLayers.Strategy.Cluster()";
-    } else {
+        $strategy   = ", new OpenLayers.Strategy.Cluster()";
+    }
+    else {
         $clustering = 'false';
     }
-    
-    if ($clustering eq 'true') {
-         $style=<<"HERE";
+
+    if ( $clustering eq 'true' ) {
+        $style = <<"HERE";
         //Create a style map object and set the 'default' intent to the
     var vector_style_map$layertopic = new OpenLayers.StyleMap({
         'default': style
@@ -300,21 +321,25 @@ sub typehandler_geojson {
     geojsonlayer$layertopic.styleMap = vector_style_map$layertopic;
 HERE
     }
-    
-    if ($data{URL} and $data{URL} =~ /\w/) {
-        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
-            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
-            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+
+    if ( $data{URL} and $data{URL} =~ /\w/ ) {
+        if ( not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/ ) {
+            my ( $dataweb, $datatopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $data{URL} );
+            $data{URL} = Foswiki::Func::getScriptUrl( $dataweb, $datatopic,
+                qw(view skin text section json) );
         }
-    } else {
-        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-    
-    my $text = "%INCLUDE{\"".$data{URL}."\"}%";
-    my $geojsonfeatures='';
-    
+    else {
+        return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+
+    my $text            = "%INCLUDE{\"" . $data{URL} . "\"}%";
+    my $geojsonfeatures = '';
+
     $geojsonfeatures = Foswiki::Func::expandCommonVariables($text);
-        
+
     push @returnString, <<"HERE";
         var geojsonlayer$layertopic = new OpenLayers.Layer.Vector(); 
         var geojsonformat$layertopic = new OpenLayers.Format.GeoJSON();
@@ -328,60 +353,70 @@ HERE
     $style
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
 
 sub typehandler_kml {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
     my @returnString;
-    my $strategy='';
-    my $style='';
-    
+    my $strategy = '';
+    my $style    = '';
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-    
+
     #my $extractStyles = $data{ExtractStyles};
-    my $extractStyles = Foswiki::Func::isTrue($data{ExtractStyles}, 0) ? 'true' : 'false';
+    my $extractStyles =
+      Foswiki::Func::isTrue( $data{ExtractStyles}, 0 ) ? 'true' : 'false';
+
     #'off' unless defined $extractStyles;
     #$extractStyles = ($extractStyles eq 'on')?'true':'false';
-    
+
     #my $extractAttributes = $data{ExtractAttributes};
     #$extractAttributes = 'on' unless defined $extractAttributes;
     #$extractAttributes = ($extractAttributes eq 'on')?'true':'false';
-    my $extractAttributes = Foswiki::Func::isTrue($data{ExtractAttributes}, 0) ? 'true' : 'false';
-    
+    my $extractAttributes =
+      Foswiki::Func::isTrue( $data{ExtractAttributes}, 0 ) ? 'true' : 'false';
+
     #my $isBaseLayer = $data{IsBaseLayer};
     #$isBaseLayer = 'false' unless defined $isBaseLayer;
     #$isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
-    my $isBaseLayer = Foswiki::Func::isTrue($data{IsBaseLayer}, 0) ? 'true' : 'false';
-    
+    my $isBaseLayer =
+      Foswiki::Func::isTrue( $data{IsBaseLayer}, 0 ) ? 'true' : 'false';
+
     my $clustering = $data{Clustering};
-#     my $distance;
-#     my $threshold;
+
+    #     my $distance;
+    #     my $threshold;
     $clustering = 'on' unless defined $clustering;
-#     $clustering = ($clustering eq 'on')?'true':'false';
-    
-    if ($clustering && $clustering =~ /^(\d+),\s*(\d+)$/) {
-        my $distance = $1;
+
+    #     $clustering = ($clustering eq 'on')?'true':'false';
+
+    if ( $clustering && $clustering =~ /^(\d+),\s*(\d+)$/ ) {
+        my $distance  = $1;
         my $threshold = $2;
-        $strategy = ", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
+        $strategy =
+", new OpenLayers.Strategy.Cluster({distance: $distance, threshold: $threshold})";
         $clustering = 'true';
-    } elsif (Foswiki::Func::isTrue($clustering, 1)) {
+    }
+    elsif ( Foswiki::Func::isTrue( $clustering, 1 ) ) {
         $clustering = 'true';
-        $strategy = ", new OpenLayers.Strategy.Cluster()";
-    } else {
+        $strategy   = ", new OpenLayers.Strategy.Cluster()";
+    }
+    else {
         $clustering = 'false';
     }
-    
-    if ($clustering eq 'true') {
-         $style=<<"HERE";
+
+    if ( $clustering eq 'true' ) {
+        $style = <<"HERE";
         //Create a style map object and set the 'default' intent to the
     var vector_style_map$layertopic = new OpenLayers.StyleMap({
         'default': style
@@ -390,16 +425,20 @@ sub typehandler_kml {
     kmllayer$layertopic.styleMap = vector_style_map$layertopic;
 HERE
     }
-    
-    if ($data{URL} and $data{URL} =~ /\w/) {
-        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
-            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
-            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+
+    if ( $data{URL} and $data{URL} =~ /\w/ ) {
+        if ( not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/ ) {
+            my ( $dataweb, $datatopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $data{URL} );
+            $data{URL} = Foswiki::Func::getScriptUrl( $dataweb, $datatopic,
+                qw(view skin text section json) );
         }
-    } else {
-        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-        
+    else {
+        return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+
     push @returnString, <<"HERE";
         var kmllayer$layertopic = new OpenLayers.Layer.Vector(
             "$data{Name}",
@@ -428,37 +467,38 @@ select.activate();
     $style
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
 
 sub typehandler_vector {
-    my ($layerObject, $layerFormObject) = @_;
-    my ($layerweb, $layertopic) = ($layerObject->web(), $layerObject->topic());
+    my ( $layerObject, $layerFormObject ) = @_;
+    my ( $layerweb, $layertopic ) =
+      ( $layerObject->web(), $layerObject->topic() );
     my @fields = $layerObject->find('FIELD');
     my %data;
     my $strategy;
     my $style;
-    my @returnString;  
-    my $proxy = '../Applications/OpenLayers'.'.Proxy?skin=text;'.'url=';
-    
+    my @returnString;
+    my $proxy = '../Applications/OpenLayers' . '.Proxy?skin=text;' . 'url=';
+
     my $isBaseLayer = $data{IsBaseLayer};
     $isBaseLayer = 'false' unless defined $isBaseLayer;
-    $isBaseLayer = ($isBaseLayer eq 'true')?'true':'false';
-    
+    $isBaseLayer = ( $isBaseLayer eq 'true' ) ? 'true' : 'false';
+
     foreach my $field (@fields) {
-        $data{$field->{name}} = $field->{value};
+        $data{ $field->{name} } = $field->{value};
     }
-    
+
     my $clustering = $data{Clustering};
     $clustering = 'on' unless defined $clustering;
-    $clustering = ($clustering eq 'on')?'true':'false';
+    $clustering = ( $clustering eq 'on' ) ? 'true' : 'false';
 
-    if ($clustering eq 'true') {
+    if ( $clustering eq 'true' ) {
         $strategy = ", new OpenLayers.Strategy.Cluster()";
-        $style=<<"HERE";
+        $style    = <<"HERE";
         //Clustering = $clustering Create a style map object and set the 'default' intent to the
 var wikilayer_style_map$layertopic = new OpenLayers.StyleMap({
 'default': style
@@ -467,16 +507,20 @@ var wikilayer_style_map$layertopic = new OpenLayers.StyleMap({
 wikilayer$layertopic.styleMap = wikilayer_style_map$layertopic;
 HERE
     }
-    
-    if ($data{URL} and $data{URL} =~ /\w/) {
-        if (not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/) {
-            my ($dataweb, $datatopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $data{URL});
-            $data{URL} = Foswiki::Func::getScriptUrl($dataweb, $datatopic, qw(view skin text section json));
+
+    if ( $data{URL} and $data{URL} =~ /\w/ ) {
+        if ( not $data{URL} =~ /^(\/|$Foswiki::cfg{LinkProtocolPattern})/ ) {
+            my ( $dataweb, $datatopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $data{URL} );
+            $data{URL} = Foswiki::Func::getScriptUrl( $dataweb, $datatopic,
+                qw(view skin text section json) );
         }
-    } else {
-        return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
     }
-        
+    else {
+        return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] does not contain a URL</span>";
+    }
+
     push @returnString, <<"HERE";
     //OpenLayers.ProxyHost = '$proxy';
         var wikilayer$layertopic = new OpenLayers.Layer.Vector('$data{Name}',{
@@ -491,8 +535,8 @@ HERE
         $style
 HERE
 
-    my $returnString = "\n".join("\n", @returnString)."\n";
-    
+    my $returnString = "\n" . join( "\n", @returnString ) . "\n";
+
     return $returnString;
 
 }
@@ -500,10 +544,11 @@ HERE
 # The function used to handle the %EXAMPLETAG{...}% macro
 # You would have one of these for each macro you want to process.
 sub _OPENLAYERSMAP {
-    my($session, $params, $topic, $web, $topicObject) = @_;
+    my ( $session, $params, $topic, $web, $topicObject ) = @_;
+
     # $session  - a reference to the Foswiki session object
     #             (you probably won't need it, but documented in Foswiki.pm)
-    # $params=  - a reference to a Foswiki::Attrs object containing 
+    # $params=  - a reference to a Foswiki::Attrs object containing
     #             parameters.
     #             This can be used as a simple hash that maps parameter names
     #             to values, with _DEFAULT being the name for the default
@@ -518,124 +563,139 @@ sub _OPENLAYERSMAP {
     # For example, %EXAMPLETAG{'hamburger' sideorder="onions"}%
     # $params->{_DEFAULT} will be 'hamburger'
     # $params->{sideorder} will be 'onions'
-    
-     Foswiki::Func::addToZone(
+
+    Foswiki::Func::addToZone(
         "script",
-        "OPENLAYERSPLUGIN::OPENLAYERMAP::OPENLAYERS", 
-        "<script src='$pubUrlPath/$Foswiki::cfg{SystemWebName}/OpenLayersPlugin/scripts/api/2/OpenLayers.js'></script>",
+        "OPENLAYERSPLUGIN::OPENLAYERMAP::OPENLAYERS",
+"<script src='$pubUrlPath/$Foswiki::cfg{SystemWebName}/OpenLayersPlugin/scripts/api/2/OpenLayers.js'></script>",
         "OPENLAYERSPLUGIN"
-   );
+    );
+
 #          Foswiki::Func::addToZone(
 #         "script",
-#         "OPENLAYERSPLUGIN::OPENLAYERMAP::OPENLAYERS", 
+#         "OPENLAYERSPLUGIN::OPENLAYERMAP::OPENLAYERS",
 #         "<script src='$pubUrlPath/$Foswiki::cfg{SystemWebName}/OpenLayersPlugin/scripts/api/3/OpenLayers.js'></script>",
 #         "OPENLAYERSPLUGIN"
 #    );
 
-    Foswiki::Func::addToZone(
-        "script",
-        "OPENLAYERSPLUGIN",
-        "<script type='text/javascript'>jQuery(document).ready(function () { init(); });</script>"
+    Foswiki::Func::addToZone( "script", "OPENLAYERSPLUGIN",
+"<script type='text/javascript'>jQuery(document).ready(function () { init(); });</script>"
     );
 
     my @mapMetadata;
     my @scriptVariable;
-    my $viewPortLayer ='';
+    my $viewPortLayer = '';
 
     my $mapHeight = $params->{mapheight};
     $mapHeight = '600' unless defined $mapHeight;
-    $mapHeight = $mapHeight.'px';
-#     push @mapMetadata, "mapHeight:$mapHeight";
+    $mapHeight = $mapHeight . 'px';
+
+    #     push @mapMetadata, "mapHeight:$mapHeight";
 
     my $mapWidth = $params->{mapwidth};
-    $mapWidth = 'my800' unless defined $mapWidth;  #FullWidth
-    $mapWidth = $mapWidth.'px';
-#     push @mapMetadata, "mapHeight:$mapWidth";
+    $mapWidth = 'my800' unless defined $mapWidth;    #FullWidth
+    $mapWidth = $mapWidth . 'px';
+
+    #     push @mapMetadata, "mapHeight:$mapWidth";
 
     my $mapViewPort = $params->{viewport};
     $mapViewPort = '149.128847,-35.28052' unless defined $mapViewPort;
-#     push @mapMetadata, "mapViewPort:$mapViewPort";
-    if ($mapViewPort =~ /$params->{layertopics}/) {
+
+    #     push @mapMetadata, "mapViewPort:$mapViewPort";
+    if ( $mapViewPort =~ /$params->{layertopics}/ ) {
         $viewPortLayer = 'true';
     }
 
     my $mapViewPortZoom = $params->{viewportzoom};
     $mapViewPortZoom = '1' unless defined $mapViewPortZoom;
-#     push @mapMetadata, "mapViewPortZoom:$mapViewPortZoom";
- 
+
+    #     push @mapMetadata, "mapViewPortZoom:$mapViewPortZoom";
+
     my @layerScripts;
 
-    my @layers = split(/,\s*/, ($params->{layertopics} || ''));
-    my $mapsWeb = Foswiki::Func::getPreferencesValue('OPENLAYERSPLUGIN_MAPSWEB') || 'Applications/OpenLayers/Layers';
-    my $mapsTopic = Foswiki::Func::getPreferencesValue('OPENLAYERSPLUGIN_DEFAULTMAP') || 'Applications/OpenLayers/Layers/DefaultMap';
-
-
+    my @layers = split( /,\s*/, ( $params->{layertopics} || '' ) );
+    my $mapsWeb = Foswiki::Func::getPreferencesValue('OPENLAYERSPLUGIN_MAPSWEB')
+      || 'Applications/OpenLayers/Layers';
+    my $mapsTopic =
+      Foswiki::Func::getPreferencesValue('OPENLAYERSPLUGIN_DEFAULTMAP')
+      || 'Applications/OpenLayers/Layers/DefaultMap';
 
 # Default Base MAP
 #     push @layerScripts, <<"HERE";
 #         // Rendering Base Map
 #    var mapOptions = { maxResolution: 45/512, numZoomLevels: 11, fractionalZoom: true};
 #    map = new OpenLayers.Map(mapOptions);
-# 
+#
 #     var wwlayerdemis = new OpenLayers.Layer.WorldWind( "World",
 #         "http://www2.demis.nl/wms/ww.ashx?", 45, 11,
 #         {T:'WorldMap'}, {tileSize: new OpenLayers.Size(512,512), wrapDateLine:true});
 #     map.addLayers([wwlayerdemis]);
-# 
+#
 #     var viewportcorner = new OpenLayers.LonLat($mapViewPort);
 #     if (map.isValidLonLat(viewportcorner) && $mapViewPortZoom) {
 #         map.moveTo(viewportcorner,$mapViewPortZoom);
 #     }
 # HERE
 
-    if (not scalar(@layers)) {
-        
+    if ( not scalar(@layers) ) {
+
 #         return '<span class="foswikiAlert">No layer topics specified!</span>';
 #       Assign a Default Map
-#         push @layers, $mapsTopic; 
+#         push @layers, $mapsTopic;
     }
-    
+
     foreach my $layername (@layers) {
-        my ($layerweb, $layertopic) = Foswiki::Func::normalizeWebTopicName($mapsWeb, $layername);
-        my ($topicObject) = Foswiki::Func::readTopic($layerweb, $layertopic);
+        my ( $layerweb, $layertopic ) =
+          Foswiki::Func::normalizeWebTopicName( $mapsWeb, $layername );
+        my ($topicObject) = Foswiki::Func::readTopic( $layerweb, $layertopic );
         my $formObject;
-        my ($formweb, $formtopic);
-        my $form = $topicObject->get('FORM');
+        my ( $formweb, $formtopic );
+        my $form   = $topicObject->get('FORM');
         my @fields = $topicObject->find('FIELD');
-        my $layertype; # vector, wms, google etc.
-        
-        if (ref($form) eq 'HASH' and $form->{name}) {
-            ($formweb, $formtopic) = Foswiki::Func::normalizeWebTopicName($layerweb, $form->{name});
-            
-            ($formObject) = Foswiki::Func::readTopic($formweb, $formtopic);
-            $layertype = $formObject->get('FIELD', 'LayerType');
-            if (ref($layertype) eq 'HASH' and $layertype->{value}) {
+        my $layertype;    # vector, wms, google etc.
+
+        if ( ref($form) eq 'HASH' and $form->{name} ) {
+            ( $formweb, $formtopic ) =
+              Foswiki::Func::normalizeWebTopicName( $layerweb, $form->{name} );
+
+            ($formObject) = Foswiki::Func::readTopic( $formweb, $formtopic );
+            $layertype = $formObject->get( 'FIELD', 'LayerType' );
+            if ( ref($layertype) eq 'HASH' and $layertype->{value} ) {
                 $layertype = $layertype->{value};
-            } else {
-                return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] form [[$formweb.$formtopic]] didn't have a LayerType field</span";
             }
-        } else {
-            return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] didn't have a form attached</span>";
+            else {
+                return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] form [[$formweb.$formtopic]] didn't have a LayerType field</span";
+            }
         }
-        if (scalar(@fields)) {
-            my %data; #= map { $_->{name} => $_->{value} } @{$fields};
-            my $typehandler = 'Foswiki::Plugins::OpenLayersPlugin::typehandler_' . $layertype;
-             
-            if (defined &{$typehandler}) {
+        else {
+            return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] didn't have a form attached</span>";
+        }
+        if ( scalar(@fields) ) {
+            my %data;    #= map { $_->{name} => $_->{value} } @{$fields};
+            my $typehandler =
+              'Foswiki::Plugins::OpenLayersPlugin::typehandler_' . $layertype;
+
+            if ( defined &{$typehandler} ) {
                 my $result;
                 {
                     no strict 'refs';
-                    $result = &{$typehandler}($topicObject, $formObject);
+                    $result = &{$typehandler}( $topicObject, $formObject );
                     use strict 'refs';
                 }
                 push @layerScripts, $result;
-            } else {
-                return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] form [[$formweb.$formtopic]]: no handler for '$layertype' type</span>";
-            }            
-        } else {
-            return "<span class='foswikiAlert'>[[$layerweb.$layertopic]] doesn't contain any formfield values</span>"
+            }
+            else {
+                return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] form [[$formweb.$formtopic]]: no handler for '$layertype' type</span>";
+            }
         }
-    
+        else {
+            return
+"<span class='foswikiAlert'>[[$layerweb.$layertopic]] doesn't contain any formfield values</span>";
+        }
+
     }
 
 #     push @scriptVariable, <<"HERE";
@@ -643,14 +703,14 @@ sub _OPENLAYERSMAP {
 #    //var mapOptions = {allOverlays: true};
 #      var mapOptions = { maxResolution: 45/512, numZoomLevels: 11, fractionalZoom: true};
 #    //map = new OpenLayers.Map(mapOptions);
-#     
-#        
+#
+#
 #    //mapOptions = {
 #      //               projection: "EPSG:900913",
 #        //             units: "m",
 #          //           maxExtent: new OpenLayers.Bounds( -20037508, -20037508, 20037508, 20037508)
 #      //       };
-# 
+#
 #         var map = new OpenLayers.Map(mapOptions);
 # HERE
 
@@ -661,20 +721,22 @@ HERE
 
     my $mapLayerSwitcher = $params->{layerswitcher};
     $mapLayerSwitcher = 'off' unless defined $mapLayerSwitcher;
-    $mapLayerSwitcher = ($mapLayerSwitcher eq 'on')?'true':'false';
+    $mapLayerSwitcher = ( $mapLayerSwitcher eq 'on' ) ? 'true' : 'false';
     if ($mapLayerSwitcher) {
-        push @scriptVariable, 'map.addControl(new OpenLayers.Control.LayerSwitcher({}));';
+        push @scriptVariable,
+          'map.addControl(new OpenLayers.Control.LayerSwitcher({}));';
     }
-    
-    my $mapMaxResolution = $params->{mapmaxresolution} || '45/512';    
-    my $mapMinResolution = $params->{mapminresulution} || 'auto';
+
+    my $mapMaxResolution  = $params->{mapmaxresolution} || '45/512';
+    my $mapMinResolution  = $params->{mapminresulution} || 'auto';
     my $mapNumZoomlLevels = $params->{mapnumzoomlevels} || '16';
-    my $mapMaxScale = $params->{mapmaxscale} || '23';
-    my $mapMinScale = $params->{mapminscale} || '23';
-    my $mapProjection = $params->{mapprojection} || 'EPSG:4326';
-    my $mapUnits = $params->{mapunits} || 'degrees';
+    my $mapMaxScale       = $params->{mapmaxscale}      || '23';
+    my $mapMinScale       = $params->{mapminscale}      || '23';
+    my $mapProjection     = $params->{mapprojection}    || 'EPSG:4326';
+    my $mapUnits          = $params->{mapunits}         || 'degrees';
+
 #    my $mapFractionalZoom = $params->{fractionalzoom} || 'on';
-# 
+#
 #     my $baseLayerName = $params->{name} || 'Base Layer';
 #     my $baseLayerMinZoomLevel = $params->{baselayerminzoomlevel} || '23';
 #     my $baseLayerMaxZoomLevel = $params->{baselayermaxzoomlevel} || '23';
@@ -682,45 +744,45 @@ HERE
 #     my $baseLayerParams = $params->{params} || 'layers: \'basic\'';
 #     my $baseLayerOptions = $params->{options} || '23';
 #     my $extraProjections = $params->{extraprojections} || 'don\'t include Proj4js if only basic functions required';
-# 
+#
 #     my $vectorLayerName = $params->{vectorlayername} || 'Vector Layer';
 #     my $vectorLayerCluster = $params->{vectorLayerCluster} || 'on' ;
 #     my $mapVectorLayerEditingToolbar = $params->{mapvectorlayereditingtoolbar} || 'off';
-# 
+#
 #     my $vectorLayerFeatures = $params->{vectorlayerfeatures} || 'filename or GEOJSON';
 
 #     my $kmlLayer = $params->{kmllayerfilename} || 'filename';
-#     
+#
 #     my $osmLayerName = $params->{osmlayername}|| 'OSM Layer';
 #     my $osmLayerAttribution = $params->{osmlayerattribution} || '23';
-# 
+#
 #     my $wmsLayerName = $params->{wmslayername} || 'WMS Layer';
 #     my $wmsLayerURL = $params->{wmslayerurl} || 'http://vmap0.tiles.osgeo.org/wms/vmap0';
 #     my $wmsLayerParams = $params->{wmslayerparams}|| 'default';
 #     my $wmsIsBaseLayer = $params->{wmsisbaselayer} || 'isBaseLayer:true';
 #     my $wmsLayerOpacity = $params->{wmslayeropacity} || 'opacity: .5';
 
-
     my $mapFractionalZoom = $params->{fractionalzoom};
     $mapFractionalZoom = 'on' unless defined $mapFractionalZoom;
-    $mapFractionalZoom = ($mapFractionalZoom eq 'on')?'true':'false';
+    $mapFractionalZoom = ( $mapFractionalZoom eq 'on' ) ? 'true' : 'false';
     push @mapMetadata, "mapFractionalZoom:$mapFractionalZoom";
 
-   
     my @layerList = ();
     my @jsFragments;
-#     my @createMap;
-#     my $isGoogleLayer;
+
+    #     my @createMap;
+    #     my $isGoogleLayer;
     my $mapLayers = $params->{layers};
 
-    my $mapDiv='';
+    my $mapDiv     = '';
     my $mapElement = $params->{mapelement};
-    if (!defined $mapElement) {
+    if ( !defined $mapElement ) {
         $mapElement = 'openlayersmap';
-        $mapDiv = "<div id='$mapElement' style='height:$mapHeight; width:$mapWidth; position:relative;'></div>";
+        $mapDiv =
+"<div id='$mapElement' style='height:$mapHeight; width:$mapWidth; position:relative;'></div>";
     }
-    
-     push @scriptVariable, <<"HERE";
+
+    push @scriptVariable, <<"HERE";
       var style = new OpenLayers.Style({
       pointRadius: "\${radius}",
       fillColor: "#ffcc66",
@@ -777,8 +839,8 @@ HERE
 #         }
 #     });
 # HERE
-# 
-        push @scriptVariable, <<"HERE";
+#
+    push @scriptVariable, <<"HERE";
     var strategy = new OpenLayers.Strategy.Cluster();
     strategy.distance= 20;
     strategy.threshold=2;
@@ -789,19 +851,19 @@ HERE
         "select": styleselect }); 
 HERE
 
-#         push @scriptVariable, <<"HERE";
-#     if(!map.getCenter()){
-#         map.zoomToMaxExtent();
-#     }
-#     map.render('$mapElement');
-# HERE
+    #         push @scriptVariable, <<"HERE";
+    #     if(!map.getCenter()){
+    #         map.zoomToMaxExtent();
+    #     }
+    #     map.render('$mapElement');
+    # HERE
 
-    if ($viewPortLayer eq 'true') {
+    if ( $viewPortLayer eq 'true' ) {
+
         # Set View port to bounds of $mapViewPort
     }
 
-
-        push @scriptVariable, <<"HERE";
+    push @scriptVariable, <<"HERE";
 
     //var viewportcorner = new OpenLayers.LonLat($mapViewPort);
     var proj = new OpenLayers.Projection("EPSG:4326");
@@ -815,14 +877,12 @@ HERE
 
 HERE
 
-    if ($isGoogleLayer eq 'true') {
-        Foswiki::Func::addToZone(
-            "script",
-            "OPENLAYERSPLUGIN", 
-            "<script src='http://maps.google.com/maps/api/js?v=3.2&sensor=false'></script>"
+    if ( $isGoogleLayer eq 'true' ) {
+        Foswiki::Func::addToZone( "script", "OPENLAYERSPLUGIN",
+"<script src='http://maps.google.com/maps/api/js?v=3.2&sensor=false'></script>"
         );
     }
-    
+
     my $mapFunctions = <<"HERE";
     <script type="text/javascript">
     
@@ -858,21 +918,19 @@ HERE
         
 HERE
 
-        Foswiki::Func::addToZone(
-        "script",
-        "OPENLAYERSPLUGIN::OPENLAYERSMAP",
-        "$mapFunctions",
-        "OPENLAYERSPLUGIN"
+    Foswiki::Func::addToZone(
+        "script",        "OPENLAYERSPLUGIN::OPENLAYERSMAP",
+        "$mapFunctions", "OPENLAYERSPLUGIN"
     );
 
-
-    my $scriptVariable = "<script type='text/javascript'> var map, select; function init()  {  \n".join("\n", @scriptVariable)."}\n</script>";
+    my $scriptVariable =
+      "<script type='text/javascript'> var map, select; function init()  {  \n"
+      . join( "\n", @scriptVariable )
+      . "}\n</script>";
 
     Foswiki::Func::addToZone(
-        "script",
-        "OPENLAYERSPLUGIN::OPENLAYERSMAP::$mapElement",
-        "$scriptVariable",
-        "OPENLAYERSPLUGIN"
+        "script",          "OPENLAYERSPLUGIN::OPENLAYERSMAP::$mapElement",
+        "$scriptVariable", "OPENLAYERSPLUGIN"
     );
 
 #    my $mapMetadata = "<script type='text/javascript'>var metadata = {".join(",\n", @mapMetadata)."}</script>";
@@ -883,10 +941,8 @@ HERE
 #         "OPENLAYERSPLUGIN"
 #     );
 
-
     return $mapDiv;
 }
-
 
 1;
 
