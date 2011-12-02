@@ -117,7 +117,8 @@ sub _getJSON {
     if ( $url && $url =~ /\w/ ) {
         my $whitelist =
           $Foswiki::cfg{Plugins}{OpenLayersPlugin}{URLs}{whitelist} || '';
-        my @URLs = map { quotemeta($_) } split( /\s*,\s*/, $whitelist );
+        my @URLs =
+          map { quotemeta( $_ . '/' ) } split( /\/\s*,\s*/, $whitelist );
         my $URLregexp = join( '|', @URLs );
 
         if ( $whitelist && $url =~ /^($URLregexp)/ ) {
