@@ -83,6 +83,7 @@ sub initPlugin {
     # This will be called whenever %EXAMPLETAG% or %EXAMPLETAG{...}% is
     # seen in the topic text.
     Foswiki::Func::registerTagHandler( 'OPENLAYERSMAP', \&_OPENLAYERSMAP );
+    Foswiki::Func::registerRESTHandler( 'getJSON', \&_proxyHandler);
 
     # Allow a sub to be called from the REST interface
     # using the provided alias
@@ -90,6 +91,66 @@ sub initPlugin {
 
     # Plugin correctly initialized
     return 1;
+}
+
+sub _filterJSON {
+    my ($text) = @_;
+    my $json;
+
+    eval {
+        require JSON;
+        $json = JSON->new->encode(JSON->new->decode($text));
+        1;
+    };
+
+    return $json;
+}
+
+sub _proxyHandler {
+    my ($session, $plugin, $verb, $response) = @_;
+    my $requestObj = Foswiki::Func::getRequestObject();
+    my $url = $requestObj->param('url');
+    my $output;
+
+    if ($url && $url =~ /\w/) {
+        require LWP::UserAgent;
+        my $ua = LWP::UserAgent->new();
+        $ua->timeout(10);
+        $ua->env_proxy();
+        my $ua_response = $ua->get($url);
+
+        if ($ua_response->is_success()) {
+            my $json = _filterJSON($ua_response->decoded_content());
+
+            if (defined $json) {
+                $output = $json;
+            } else {
+                $output = "$url did not return valid JSON.";
+                $response->header(
+                    -status  => 502,
+                    -type    => 'text/plain',
+                    -charset => 'UTF-8'
+                );
+            }
+        }
+        else {
+            $output = "Request to $url failed: " . $ua_response->status_line();
+            $response->header(
+                -status  => 500,
+                -type    => 'text/plain',
+                -charset => 'UTF-8'
+            );
+        }
+    } else {
+        $output = 'Invalid request: missing url';
+        $response->header(
+            -status  => 400,
+            -type    => 'text/plain',
+            -charset => 'UTF-8'
+        );
+    }
+
+    return $output;
 }
 
 sub typehandler_worldwind {
