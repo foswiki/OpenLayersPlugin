@@ -81,7 +81,7 @@ sub initPlugin {
     # This will be called whenever %EXAMPLETAG% or %EXAMPLETAG{...}% is
     # seen in the topic text.
     Foswiki::Func::registerTagHandler( 'OPENLAYERSMAP', \&_OPENLAYERSMAP );
-    Foswiki::Func::registerRESTHandler( 'getJSON', \&_proxyHandler );
+    Foswiki::Func::registerRESTHandler( 'getJSON', \&_getJSON );
 
     # Allow a sub to be called from the REST interface
     # using the provided alias
@@ -104,50 +104,62 @@ sub _filterJSON {
     return $json;
 }
 
-sub _proxyHandler {
+sub _getJSON {
     my ( $session, $plugin, $verb, $response ) = @_;
     my $requestObj = Foswiki::Func::getRequestObject();
     my $url        = $requestObj->param('url');
     my $output;
+    my %header = (
+        -type    => 'text/plain',
+        -charset => 'UTF-8'
+    );
 
     if ( $url && $url =~ /\w/ ) {
-        require LWP::UserAgent;
-        my $ua = LWP::UserAgent->new();
-        $ua->timeout(10);
-        $ua->env_proxy();
-        my $ua_response = $ua->get($url);
+        my $whitelist =
+          $Foswiki::cfg{Plugins}{OpenLayersPlugin}{URLs}{whitelist} || '';
+        my @URLs = map { quotemeta($_) } split( /\s*,\s*/, $whitelist );
+        my $URLregexp = join( '|', @URLs );
 
-        if ( $ua_response->is_success() ) {
-            my $json = _filterJSON( $ua_response->decoded_content() );
+        if ( $whitelist && $url =~ /^($URLregexp)/ ) {
+            require LWP::UserAgent;
+            require HTTP::Request;
+            my $ua = LWP::UserAgent->new();
+            my $ua_request = HTTP::Request->new( GET => $url );
+            $ua_request->content_type('application/json');
+            $ua->timeout(10);
+            $ua->env_proxy();
+            my $ua_response = $ua->request($ua_request);
 
-            if ( defined $json ) {
-                $output = $json;
+            if ( $ua_response->is_success() ) {
+                my $json = _filterJSON( $ua_response->decoded_content() );
+
+                if ( defined $json ) {
+                    $output = $json;
+                    $response->header(
+                        %header,
+                        -status => 200,
+                        -type   => 'application/json',
+                    );
+                }
+                else {
+                    $output = "$url did not return valid JSON.";
+                    $response->header( %header, -status => 502 );
+                }
             }
             else {
-                $output = "$url did not return valid JSON.";
-                $response->header(
-                    -status  => 502,
-                    -type    => 'text/plain',
-                    -charset => 'UTF-8'
-                );
+                $output =
+                  "Request to $url failed: " . $ua_response->status_line();
+                $response->header( %header, -status => 500 );
             }
         }
         else {
-            $output = "Request to $url failed: " . $ua_response->status_line();
-            $response->header(
-                -status  => 500,
-                -type    => 'text/plain',
-                -charset => 'UTF-8'
-            );
+            $output = "$url not in whitelist";
+            $response->header( %header, -status => 403 );
         }
     }
     else {
         $output = 'Invalid request: missing url';
-        $response->header(
-            -status  => 400,
-            -type    => 'text/plain',
-            -charset => 'UTF-8'
-        );
+        $response->header( %header, -status => 400 );
     }
 
     return $output;
